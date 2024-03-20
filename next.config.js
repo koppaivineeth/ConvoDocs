@@ -1,17 +1,9 @@
-module.exports = {
-
-    env: {
-
-        'MYSQL_HOST': '127.0.0.1',
-
-        'MYSQL_PORT': '3306',
-
-        'MYSQL_DATABASE': "",
-
-        'MYSQL_USER': "root",
-
-        'MYSQL_PASSWORD': "Business_007",
-
+const nextConfig = {
+    webpack: (config, { buildId, dev, isServer, dafaultLoaders, webpack }) => {
+        config.resolve.alias.canvas = false
+        config.resolve.alias.encoding = false
+        return config
     }
-
 }
+
+module.exports = nextConfig

@@ -24,6 +24,7 @@ const Page = async ({ params }: PageProps) => {
             fileId: fileId
         }
     })
+
     if (!file) notFound()
 
     return <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.rem)]">
@@ -31,7 +32,7 @@ const Page = async ({ params }: PageProps) => {
             {/* left side - pdf view */}
             <div className="flex-1 xl:flex">
                 <div className="px-4 py-6 sm-px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-                    <PDFRenderer />
+                    <PDFRenderer url={file.url} />
                 </div>
             </div>
 

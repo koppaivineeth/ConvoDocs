@@ -24,7 +24,7 @@ const onUploadComplete = async ({
         url: string
     }
 }) => {
-    console.log("UPLOAD COMPLETE")
+    console.log("UPLOAD COMPLETE = ", file)
     const isFileExist = await db.user_files.findFirst({
         where: {
             key: file.key,
@@ -38,7 +38,7 @@ const onUploadComplete = async ({
             key: file.key,
             fileName: file.name,
             userId: metadata.user,
-            url: `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`,
+            url: file.url,
             uploadStatus: 'PROCESSING',
         },
     })
