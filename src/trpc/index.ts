@@ -1,7 +1,7 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { privateProcedure, publicProcedure, router } from './trpc';
 import { TRPCError } from '@trpc/server';
-import excuteQuery from '@/db';
+import { db } from '@/db';
 import { z } from 'zod';
 
 export const appRouter = router({
@@ -13,56 +13,87 @@ export const appRouter = router({
             throw new TRPCError({ code: "UNAUTHORIZED" })
 
         // check it the user is in database
-        const dbUser = await excuteQuery({
-            query: "SELECT * FROM users WHERE userEmail = ?",
-            values: [user.email]
+        const dbUser = await db.users.findFirst({
+            where: {
+                userEmail: user.email
+            }
         })
-        if (dbUser.length === 0) {
-            const insertUser = await excuteQuery({
-                query: 'INSERT INTO users (userId, userEmail, name) VALUES(?,?,?)',
-                values: [user.id, user.email, user.given_name]
+        if (!dbUser) {
+            await db.users.create({
+                data: {
+                    userId: user.id,
+                    userEmail: user.email,
+                    name: user.given_name
+                }
             })
         }
 
         return { success: true }
     }),
+    getFile: privateProcedure.input(z.object({ key: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const { userId } = ctx
+
+            const file = await db.user_files.findFirst({
+                where: {
+                    key: input.key,
+                    userId
+                }
+            })
+
+            if (!file) throw new TRPCError({ code: "NOT_FOUND" })
+
+            return file
+
+        }),
     getUserFiles: privateProcedure.query(async () => {
 
         const { getUser } = getKindeServerSession()
         const user = await getUser()
-        const userFiles = await excuteQuery({
-            query: "SELECT * FROM user_files WHERE userId = ?",
-            values: [user?.id]
+        const userFiles = await db.user_files.findMany({
+            where: {
+                userId: user?.id
+            }
         })
         return { status: "success", files: userFiles }
     }),
-    deleteFile: privateProcedure
+    getSingleFile: privateProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            const { getUser } = getKindeServerSession()
-            const user = await getUser()
-            const file = await excuteQuery({
-                query: "SELECT * FROM user_files WHERE userId = ?",
-                values: [user?.id]
+            const { userId } = ctx;
+
+            const file = await db.user_files.findFirst({
+                where: {
+                    fileId: input.id,
+                    userId
+                }
             })
             if (!file) throw new TRPCError({ code: "FILE_NOT_FOUND" })
 
-            await excuteQuery({
-                query: "DELETE FROM user_files WHERE fileId = ? AND userId = ?",
-                values: [input.id, user?.id]
+            return file
+        }),
+    deleteFile: privateProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const { userId } = ctx;
+            const { getUser } = getKindeServerSession()
+            const user = await getUser()
+            const file = await db.user_files.findFirst({
+                where: {
+                    fileId: input.id,
+                    userId
+                }
+            })
+            if (!file) throw new TRPCError({ code: "FILE_NOT_FOUND" })
+
+            await db.user_files.delete({
+                where: {
+                    fileId: input.id,
+                    userId
+                }
             })
             return file
         })
-    // deleteFile: privateProcedure.query(async (fileId) => {
-    //     const { getUser } = getKindeServerSession()
-    //     const user = await getUser()
-    //     const deletedFile = await excuteQuery({
-    //         query: "DELETE FROM user_files WHERE fileId = ? AND userId = ?",
-    //         values: [fileId, user?.id]
-    //     })
-    //     console.log(deletedFile)
-    //     return { status: "success", message: "File deleted" }
-    // })
 });
 
 export type AppRouter = typeof appRouter;

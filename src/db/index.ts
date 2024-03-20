@@ -1,18 +1,18 @@
-import mysql from 'mysql2/promise'
+import { PrismaClient } from '@prisma/client'
 
-const connection = await mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  database: 'read_companion',
-  password: "Business_007"
-});
-
-export default async function excuteQuery({ query, values }) {
-  try {
-    const [results, fields] = await connection.query(query, values)
-    // await connection.end();
-    return results;
-  } catch (error) {
-    return { error };
-  }
+declare global {
+    // eslint-disable-next-line no-var
+    var cachedPrisma: PrismaClient
 }
+
+let prisma: PrismaClient
+if (process.env.NODE_ENV === 'production') {
+    prisma = new PrismaClient()
+} else {
+    if (!global.cachedPrisma) {
+        global.cachedPrisma = new PrismaClient()
+    }
+    prisma = global.cachedPrisma
+}
+
+export const db = prisma

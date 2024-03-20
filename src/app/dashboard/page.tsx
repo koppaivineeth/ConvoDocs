@@ -1,9 +1,8 @@
 // "use client"
-
-import excuteQuery from "@/db"
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { redirect } from "next/navigation"
 import Dashboard from "@/components/Dashboard"
+import { db } from "@/db"
 
 const Page = async () => {
     const { getUser } = getKindeServerSession()
@@ -11,11 +10,12 @@ const Page = async () => {
 
     if (!user || !user.id) redirect("/auth-callback?origin=dashboard")
 
-    const dbUser = await excuteQuery({
-        query: "SELECT * FROM users WHERE userId = ?",
-        values: [user.id]
+    const dbUser = await db.users.findFirst({
+        where: {
+            userId: user.id
+        }
     })
-    if (dbUser.length === 0) redirect("/auth-callback?origin=dashboard")
+    if (!dbUser) redirect("/auth-callback?origin=dashboard")
 
 
 

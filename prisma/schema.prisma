@@ -1,42 +1,28 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
-model User {
-  id String @id @unique
-  email String @unique
-  Files File[]
-
-  stripCustomerId         String?     @unique @map(name: "stripe_customer_id")
-  stripeSubscriptionId    String?     @unique @map(name: "stripe_subscription_id")
-  stripePriceId           String?     @map(name: "stripe_price_id")
-  stripeCurrentPeriodEnd  DateTime?   @map(name:"stripe_current_period_end")
+model user_files {
+  fileId       String    @id @default(cuid())
+  fileName     String    @db.VarChar(45)
+  uploadStatus String    @db.VarChar(15)
+  url          String    @db.VarChar(145)
+  key          String?   @db.VarChar(145)
+  createdAt    DateTime? @db.DateTime(0)
+  updatedAt    String?   @db.VarChar(50)
+  userId       String    @db.VarChar(45)
 }
 
-enum uploadStatus {
-  PENDING
-  PROCESSING
-  FAILED
-  SUCCESS
-}
-
-model File {
-  id String @id @default(cuid())
-  name String
-  uploadStatus uploadStatus @default(PENDING)
-  url String
-  key String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @uploadedAt
+model users {
+  userId         String  @unique(map: "userId_UNIQUE") @db.VarChar(50)
+  userEmail      String  @id @unique(map: "email_UNIQUE") @db.VarChar(45)
+  name           String  @db.VarChar(45)
+  subscriptionId String? @db.VarChar(45)
+  priceId        String? @db.VarChar(45)
 }
