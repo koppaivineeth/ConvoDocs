@@ -1,6 +1,12 @@
 import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
+import { Pinecone } from "@pinecone-database/pinecone";
+import { Document } from "@langchain/core/documents";
+import { PineconeStore } from "@langchain/pinecone";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+
 
 const f = createUploadthing();
 
@@ -42,6 +48,52 @@ const onUploadComplete = async ({
             uploadStatus: 'PROCESSING',
         },
     })
+
+    try {
+        const response = await fetch(file.url)
+        const blob = await response.blob()
+
+        const loader = new PDFLoader(blob)
+        console.log("BLOB = ", blob)
+        console.log("LOADR = ", loader)
+        const pageLevelDocs = await loader.load()
+
+        const pageAmt = pageLevelDocs.length
+
+        //Vectorize and index entire document
+        const pinecone = new Pinecone();
+
+        const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX)
+
+        const embeddings = new OpenAIEmbeddings()
+
+
+        await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
+            pineconeIndex,
+            namespace: createdFile.fileId,
+            maxConcurrency: 5
+        })
+        console.log("after indexing")
+        await db.user_files.update({
+            data: {
+                uploadStatus: 'SUCCESS'
+            },
+            where: {
+                fileId: createdFile.fileId
+            }
+        })
+
+    } catch (err) {
+        console.log('Error updating = ', err)
+        await db.user_files.update({
+            data: {
+                uploadStatus: 'FAILED'
+            },
+            where: {
+                fileId: createdFile.fileId
+            }
+        })
+    }
 }
 
 export const ourFileRouter = {

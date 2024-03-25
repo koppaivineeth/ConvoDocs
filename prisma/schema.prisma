@@ -8,21 +8,47 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  FAILED
+  SUCCESS
+}
+
 model user_files {
-  fileId       String    @id @default(cuid())
-  fileName     String    @db.VarChar(45)
-  uploadStatus String    @db.VarChar(15)
-  url          String    @db.VarChar(145)
-  key          String?   @db.VarChar(145)
-  createdAt    DateTime? @db.DateTime(0)
-  updatedAt    String?   @db.VarChar(50)
-  userId       String    @db.VarChar(45)
+  fileId       String       @id @default(cuid())
+  fileName     String       @db.VarChar(45)
+  uploadStatus UploadStatus @default(PENDING)
+  url          String       @db.VarChar(145)
+  key          String?      @db.VarChar(145)
+
+  messages message[]
+
+  createdAt      DateTime? @db.DateTime(0)
+  updatedAt      String?   @db.VarChar(50)
+  users          users?    @relation(fields: [userId], references: [userId])
+  userId         String    @db.VarChar(45)
 }
 
 model users {
-  userId         String  @unique(map: "userId_UNIQUE") @db.VarChar(50)
-  userEmail      String  @id @unique(map: "email_UNIQUE") @db.VarChar(45)
-  name           String  @db.VarChar(45)
-  subscriptionId String? @db.VarChar(45)
-  priceId        String? @db.VarChar(45)
+  userId         String       @unique(map: "userId_UNIQUE") @db.VarChar(50)
+  userEmail      String       @id @unique(map: "email_UNIQUE") @db.VarChar(45)
+  name           String       @db.VarChar(45)
+  subscriptionId String?      @db.VarChar(45)
+  priceId        String?      @db.VarChar(45)
+  Message        message[]
+  File           user_files[]
+}
+
+model message {
+  id   String @id @default(cuid())
+  text String @db.Text()
+
+  isUserMessage Boolean
+  createdAt     DateTime?   @db.DateTime(0)
+  updatedAt     String?     @db.VarChar(50)
+  User          users?      @relation(fields: [userId], references: [userId])
+  userId        String?
+  File          user_files? @relation(fields: [fileId], references: [fileId])
+  fileId        String?
 }
