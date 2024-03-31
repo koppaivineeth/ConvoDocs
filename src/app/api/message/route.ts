@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { sendMessageValidator } from "@/lib/validators/SendMessageValidator";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { OpenAIEmbeddings } from "@langchain/openai";
 import { NextRequest } from "next/server";
 import { PineconeStore } from "@langchain/pinecone";
 import { openai } from "@/lib/openai";
@@ -13,7 +13,6 @@ import { OpenAIStream, StreamingTextResponse } from "ai";
 export const POST = async (req: NextRequest) => {
     // endpoint for asking a question to the pdf file
     const body = await req.json()
-
     const { getUser } = getKindeServerSession()
     const user = await getUser()
 
@@ -21,7 +20,7 @@ export const POST = async (req: NextRequest) => {
 
     if (!userId) return new Response('Unauthorized', { status: 401 })
 
-    const { fileId, message } = sendMessageValidator.parse(body)
+    const { fileId, message, createdAt } = sendMessageValidator.parse(body)
 
     const file = await db.user_files.findFirst({
         where: {
@@ -29,7 +28,6 @@ export const POST = async (req: NextRequest) => {
             userId
         }
     })
-
     if (!file) return new Response('Not Found', { status: 404 })
 
     await db.message.create({
@@ -37,25 +35,25 @@ export const POST = async (req: NextRequest) => {
             text: message,
             isUserMessage: true,
             userId,
-            fileId
+            fileId,
+            createdAt: createdAt
         }
     })
 
     // vectorize the message
 
-    const embeddings = new OpenAIEmbeddings()
-    const pinecone = new Pinecone();
+    const embeddings = new OpenAIEmbeddings({
+        openAIApiKey: process.env.OPENAI_API_KEY,
+    })
+    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
 
     const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX)
-
     // Searching for results in the indexed file
     const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
         pineconeIndex,
         namespace: file.fileId
     })
-
     const results = await vectorStore.similaritySearch(message, 4)
-
     const prevMessages = await db.message.findMany({
         where: {
             fileId
@@ -103,7 +101,6 @@ export const POST = async (req: NextRequest) => {
             },
         ],
     })
-
     const stream = OpenAIStream(response, {
         async onCompletion(completion) {
             await db.message.create({
@@ -116,6 +113,5 @@ export const POST = async (req: NextRequest) => {
             })
         }
     })
-
     return new StreamingTextResponse(stream)
 }

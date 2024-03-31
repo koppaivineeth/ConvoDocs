@@ -30,7 +30,6 @@ const onUploadComplete = async ({
         url: string
     }
 }) => {
-    console.log("UPLOAD COMPLETE = ", file)
     const isFileExist = await db.user_files.findFirst({
         where: {
             key: file.key,
@@ -54,14 +53,12 @@ const onUploadComplete = async ({
         const blob = await response.blob()
 
         const loader = new PDFLoader(blob)
-        console.log("BLOB = ", blob)
-        console.log("LOADR = ", loader)
         const pageLevelDocs = await loader.load()
 
         const pageAmt = pageLevelDocs.length
 
         //Vectorize and index entire document
-        const pinecone = new Pinecone();
+        const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
 
         const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX)
 
@@ -73,7 +70,6 @@ const onUploadComplete = async ({
             namespace: createdFile.fileId,
             maxConcurrency: 5
         })
-        console.log("after indexing")
         await db.user_files.update({
             data: {
                 uploadStatus: 'SUCCESS'
@@ -82,9 +78,7 @@ const onUploadComplete = async ({
                 fileId: createdFile.fileId
             }
         })
-
     } catch (err) {
-        console.log('Error updating = ', err)
         await db.user_files.update({
             data: {
                 uploadStatus: 'FAILED'
