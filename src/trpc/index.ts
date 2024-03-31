@@ -25,7 +25,7 @@ export const appRouter = router({
                 data: {
                     userId: user.id,
                     userEmail: user.email,
-                    name: user.given_name
+                    name: user.given_name!
                 }
             })
         }
@@ -108,7 +108,7 @@ export const appRouter = router({
                 }
             })
 
-            if (!file) throw new TRPCError({ code: "NOT_FOUND" })
+            if (!file) throw new TRPCError({ code: "NOT_FOUND", message: "File not found" })
 
             return file
 
@@ -135,7 +135,7 @@ export const appRouter = router({
                     userId
                 }
             })
-            if (!file) throw new TRPCError({ code: "FILE_NOT_FOUND" })
+            if (!file) throw new TRPCError({ code: "NOT_FOUND", message: "File not found" })
 
             return file
         }),
@@ -151,7 +151,7 @@ export const appRouter = router({
                     userId
                 }
             })
-            if (!file) throw new TRPCError({ code: "FILE_NOT_FOUND" })
+            if (!file) throw new TRPCError({ code: "NOT_FOUND", message: "File not found" })
 
             await db.user_files.delete({
                 where: {

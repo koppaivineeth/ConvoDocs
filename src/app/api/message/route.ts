@@ -45,9 +45,9 @@ export const POST = async (req: NextRequest) => {
     const embeddings = new OpenAIEmbeddings({
         openAIApiKey: process.env.OPENAI_API_KEY,
     })
-    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
+    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
-    const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX)
+    const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX!)
     // Searching for results in the indexed file
     const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
         pineconeIndex,

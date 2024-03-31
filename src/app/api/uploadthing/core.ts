@@ -3,7 +3,6 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
 import { Pinecone } from "@pinecone-database/pinecone";
-import { Document } from "@langchain/core/documents";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
@@ -58,9 +57,9 @@ const onUploadComplete = async ({
         const pageAmt = pageLevelDocs.length
 
         //Vectorize and index entire document
-        const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
+        const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
-        const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX)
+        const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX!)
 
         const embeddings = new OpenAIEmbeddings()
 

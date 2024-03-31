@@ -53,7 +53,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(
                                 "text-zinc-500": !message.isUserMessage,
                                 "text-blue-300": message.isUserMessage
                             })}>
-                                {format(new Date(message.createdAt), "HH:MM")}
+                                {format(new Date(message.createdAt!), "HH:MM")}
                             </div>
                         ) : null
                     }
