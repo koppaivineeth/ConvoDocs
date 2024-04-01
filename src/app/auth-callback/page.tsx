@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation"
 import { trpc } from "../_trpc/client"
 import { Loader2 } from "lucide-react"
-import { useEffect } from "react"
 
 const Page = () => {
     const router = useRouter()
@@ -18,22 +17,22 @@ const Page = () => {
         router.push("/api/auth/login");
     }
 
-    // trpc.authCallback.(undefined, {
-    //     onSuccess: ({ success }) => {
-    //         console.log("SUCCESS---")
-    //         if (success)
-    //             //user is synced to database
-    //             router.push(origin ? `/${origin}` : '/dashboard')
-    //     },
-    //     onError: (err) => {
-    //         console.log("NOT AUTHORIZED")
-    //         if (err.data?.code === "UNAUTHORIZED") {
-    //             router.push("/sing-in")
-    //         }
-    //     },
-    //     retry: true,
-    //     retryDelay: 500
-    // })
+    trpc.authCallback.useQuery(undefined, {
+        onSuccess: ({ success }) => {
+            console.log("SUCCESS---")
+            if (success)
+                //user is synced to database
+                router.push(origin ? `/${origin}` : '/dashboard')
+        },
+        onError: (err) => {
+            console.log("NOT AUTHORIZED")
+            if (err.data?.code === "UNAUTHORIZED") {
+                router.push("/sing-in")
+            }
+        },
+        retry: true,
+        retryDelay: 500
+    })
 
     return (
         <div className="w-full mt-24 flex justify-center">

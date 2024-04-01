@@ -20,7 +20,7 @@ export const POST = async (req: NextRequest) => {
 
     if (!userId) return new Response('Unauthorized', { status: 401 })
 
-    const { fileId, message, createdAt } = sendMessageValidator.parse(body)
+    const { fileId, message } = sendMessageValidator.parse(body)
 
     const file = await db.user_files.findFirst({
         where: {
@@ -35,8 +35,7 @@ export const POST = async (req: NextRequest) => {
             text: message,
             isUserMessage: true,
             userId,
-            fileId,
-            createdAt: createdAt
+            fileId
         }
     })
 
@@ -63,7 +62,7 @@ export const POST = async (req: NextRequest) => {
         },
         take: 6
     })
-
+    console.log("PREV MESGS  = ", prevMessages)
     const formattedPrevMessages = prevMessages.map((msg) => ({
         role: msg.isUserMessage ? "user" as const : "assist" as const,
         content: msg.text
@@ -103,6 +102,7 @@ export const POST = async (req: NextRequest) => {
     })
     const stream = OpenAIStream(response, {
         async onCompletion(completion) {
+            console.log("COMPLETION == ", completion, " == ", response)
             await db.message.create({
                 data: {
                     text: completion,

@@ -24,7 +24,7 @@ model user_files {
 
   messages message[]
 
-  createdAt      DateTime? @db.DateTime(0)
+  createdAt      DateTime? @default(now())
   updatedAt      String?   @db.VarChar(50)
   users          users?    @relation(fields: [userId], references: [userId])
   userId         String    @db.VarChar(45)
@@ -45,7 +45,7 @@ model message {
   text String @db.Text()
 
   isUserMessage Boolean
-  createdAt     DateTime?   @db.DateTime(0)
+  createdAt     DateTime?   @db.DateTime(0) @default(now())
   updatedAt     String?     @db.VarChar(50)
   User          users?      @relation(fields: [userId], references: [userId])
   userId        String?

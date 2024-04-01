@@ -27,7 +27,7 @@ const Navbar = () => {
                     {/* <MobileNav isAuth={!!user} /> */}
 
                     <div className='hidden items-center space-x-4 sm:flex'>
-                        <Link
+                        {/* <Link
                             href='/pricing'
                             className={buttonVariants({
                                 variant: 'ghost',
@@ -48,8 +48,8 @@ const Navbar = () => {
                             })}>
                             Get started{' '}
                             <ArrowRight className='ml-1.5 h-5 w-5' />
-                        </RegisterLink>
-                        {/* {!user ? (
+                        </RegisterLink> */}
+                        {!user ? (
                             <>
                                 <Link
                                     href='/pricing'
@@ -85,17 +85,17 @@ const Navbar = () => {
                                     Dashboard
                                 </Link>
 
-                                <UserAccountNav
-                  name={
-                    !user.given_name || !user.family_name
-                      ? 'Your Account'
-                      : `${user.given_name} ${user.family_name}`
-                  }
-                  email={user.email ?? ''}
-                  imageUrl={user.picture ?? ''}
-                />
+                                {/* <UserAccountNav
+                                    name={
+                                        !user.given_name || !user.family_name
+                                            ? 'Your Account'
+                                            : `${user.given_name} ${user.family_name}`
+                                    }
+                                    email={user.email ?? ''}
+                                    imageUrl={user.picture ?? ''}
+                                /> */}
                             </>
-                        )} */}
+                        )}
                     </div>
                 </div>
             </MaxWidthWrapper>
