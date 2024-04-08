@@ -113,7 +113,7 @@ const Page = async () => {
                                     <div className="flex items-center space-x-1">
                                         <p>{quota.toLocaleString()} PDFs/mo included</p>
 
-                                        <Tooltip delayDuraction={300}>
+                                        <Tooltip delayDuration={300}>
                                             <TooltipTrigger className="cursor-default ml-1.5">
                                                 <HelpCircle className="h4 w-4 text-zinc-500" />
                                             </TooltipTrigger>
@@ -141,7 +141,7 @@ const Page = async () => {
                                                     })}>
                                                         {text}
                                                     </p>
-                                                    <Tooltip delayDuraction={300}>
+                                                    <Tooltip delayDuration={300}>
                                                         <TooltipTrigger className="cursor-default ml-1.5">
                                                             <HelpCircle className="h4 w-4 text-zinc-500" />
                                                         </TooltipTrigger>

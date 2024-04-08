@@ -17,21 +17,6 @@ const Page = () => {
         router.push("/api/auth/login");
     }
 
-    trpc.authCallback.useQuery(undefined, {
-        onSuccess: ({ success }) => {
-            if (success)
-                //user is synced to database
-                router.push(origin ? `/${origin}` : '/dashboard')
-        },
-        onError: (err) => {
-            if (err.data?.code === "UNAUTHORIZED") {
-                router.push("/sing-in")
-            }
-        },
-        retry: true,
-        retryDelay: 500
-    })
-
     return (
         <div className="w-full mt-24 flex justify-center">
             <div className="flex flex-col items-center gap-2">
