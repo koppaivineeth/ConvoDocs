@@ -62,7 +62,6 @@ export const POST = async (req: NextRequest) => {
         },
         take: 6
     })
-    console.log("PREV MESGS  = ", prevMessages)
     const formattedPrevMessages = prevMessages.map((msg) => ({
         role: msg.isUserMessage ? "user" as const : "assist" as const,
         content: msg.text
@@ -102,7 +101,6 @@ export const POST = async (req: NextRequest) => {
     })
     const stream = OpenAIStream(response, {
         async onCompletion(completion) {
-            console.log("COMPLETION == ", completion, " == ", response)
             await db.message.create({
                 data: {
                     text: completion,

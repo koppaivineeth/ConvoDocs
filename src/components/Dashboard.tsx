@@ -10,6 +10,7 @@ import { Button } from "./ui/button"
 import { useState } from "react"
 
 const Dashboard = () => {
+    console.log("USR DASHBOARD COMPONENT= ")
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
         null
     )
