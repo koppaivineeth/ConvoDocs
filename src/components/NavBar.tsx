@@ -8,6 +8,7 @@ import {
 } from '@kinde-oss/kinde-auth-nextjs/server'
 import { ArrowRight } from 'lucide-react'
 import UserAccountNav from './UserAccountNav'
+import MobileNav from './MobileNav'
 // import MobileNav from './MobileNav'
 
 const Navbar = async () => {
@@ -25,31 +26,9 @@ const Navbar = async () => {
                         <span>YRC.</span>
                     </Link>
 
-                    {/* <MobileNav isAuth={!!user} /> */}
+                    <MobileNav isAuth={!!user} />
 
                     <div className='hidden items-center space-x-4 sm:flex'>
-                        {/* <Link
-                            href='/pricing'
-                            className={buttonVariants({
-                                variant: 'ghost',
-                                size: 'sm',
-                            })}>
-                            Pricing
-                        </Link>
-                        <LoginLink
-                            className={buttonVariants({
-                                variant: 'ghost',
-                                size: 'sm',
-                            })}>
-                            Sign in
-                        </LoginLink>
-                        <RegisterLink
-                            className={buttonVariants({
-                                size: 'sm',
-                            })}>
-                            Get started{' '}
-                            <ArrowRight className='ml-1.5 h-5 w-5' />
-                        </RegisterLink> */}
                         {!user ? (
                             <>
                                 <Link
