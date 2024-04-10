@@ -5,6 +5,8 @@ import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
 import { Pinecone } from "@pinecone-database/pinecone";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { getUserSubscriptionPlan } from "@/lib/stripe";
+import { PLANS } from "@/config/stripe";
 
 
 const f = createUploadthing();
@@ -15,7 +17,9 @@ const middleware = async () => {
 
     if (!user || !user.id) throw new Error('Unauthorized')
 
-    return { user: user.id };
+    const subsriptionPlan = await getUserSubscriptionPlan()
+
+    return { subsriptionPlan, user: user.id };
 }
 
 const onUploadComplete = async ({
@@ -56,6 +60,24 @@ const onUploadComplete = async ({
 
         const pageAmt = pageLevelDocs.length
 
+        const { subsriptionPlan } = metadata
+        const { isSubscribed } = subsriptionPlan
+
+        const isProExceeded = pageAmt > PLANS.find((plan) => plan.name === "Pro")!.pagesPerPdf
+        const isFreeExceeded = pageAmt > PLANS.find((plan) => plan.name === "Free")!.pagesPerPdf
+
+
+        if ((isSubscribed && isProExceeded) || (!isSubscribed && isFreeExceeded)) {
+            await db.user_files.update({
+                data: {
+                    uploadStatus: "FAILED"
+                },
+                where: {
+                    fileId: createdFile.fileId
+                }
+            })
+        }
+
         //Vectorize and index entire document
         const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
@@ -93,6 +115,9 @@ export const ourFileRouter = {
     freePlanUploader: f({ pdf: { maxFileSize: "4MB" } })
         .middleware(middleware)
         .onUploadComplete(onUploadComplete),
+    proPlanUploader: f({ pdf: { maxFileSize: "16MB" } })
+        .middleware(middleware)
+        .onUploadComplete(onUploadComplete)
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

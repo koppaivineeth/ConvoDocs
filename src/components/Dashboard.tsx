@@ -8,9 +8,12 @@ import Skeleteon from 'react-loading-skeleton'
 import { format } from 'date-fns'
 import { Button } from "./ui/button"
 import { useState } from "react"
+import { getUserSubscriptionPlan } from "@/lib/stripe"
 
-const Dashboard = () => {
-    console.log("USR DASHBOARD COMPONENT= ")
+interface PageProps {
+    subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
+}
+const Dashboard = ({ subscriptionPlan }: PageProps) => {
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
         null
     )
@@ -34,7 +37,7 @@ const Dashboard = () => {
                 <h1 className="mb-3 font-bold text-5xl text-gray-900">
                     My Files
                 </h1>
-                <UploadButton />
+                <UploadButton isSubscribed={subscriptionPlan.isSubscribed} />
             </div>
 
             {/* Display all user files */}
