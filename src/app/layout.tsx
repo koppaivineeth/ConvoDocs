@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import "react-loading-skeleton/dist/skeleton.css";
 import "simplebar-react/dist/simplebar.min.css";
 import "./globals.css";
+import { Viewport } from "next";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,4 +29,7 @@ export default function RootLayout({
       </Providers>
     </html>
   );
+}
+export const viewport: Viewport = {
+  themeColor: '#fff',
 }

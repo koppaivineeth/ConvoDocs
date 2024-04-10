@@ -47,7 +47,6 @@ export function constructMetadata({
     },
     icons,
     metadataBase: new URL("https://your-read-companion-h1z361zlf-vineeth-koppais-projects.vercel.app"),
-    themeColor: "#fff",
     ...(noIndex && {
       index: false,
       follow: false
