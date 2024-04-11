@@ -3,9 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider     = "mongodb"
-  url          = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("POSTGRES_PRISMA_URL")
   relationMode = "prisma"
+  directUrl    = env("POSTGRES_URL_NON_POOLING")
 }
 
 enum UploadStatus {
@@ -24,7 +25,7 @@ model user_files {
 
   messages message[]
 
-  createdAt      DateTime? @default(now())
+  createdAt      DateTime  @default(now())
   updatedAt      String?   @db.VarChar(50)
   users          users?    @relation(fields: [userId], references: [userId])
   userId         String    @db.VarChar(45)
@@ -42,7 +43,7 @@ model users {
   stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
   stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
   stripePriceId          String?   @map(name: "stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+  stripeCurrentPeriodEnd DateTime  @map(name: "stripe_current_period_end")
 }
 
 model message {
@@ -50,7 +51,7 @@ model message {
   text String @db.Text()
 
   isUserMessage Boolean
-  createdAt     DateTime?   @db.DateTime(0) @default(now())
+  createdAt     DateTime    @default(now())
   updatedAt     String?     @db.VarChar(50)
   User          users?      @relation(fields: [userId], references: [userId])
   userId        String?
