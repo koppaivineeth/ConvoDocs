@@ -19,7 +19,7 @@ export default function Home() {
           in seconds.
         </h1>
         <p className='mt-5 max-w-prose text-zinc-700 sm:text-lg'>
-          Quill allows you to have conversations with any
+          YRC allows you to have conversations with any
           PDF document. Simply upload your file and start
           asking questions right away.
         </p>
@@ -90,7 +90,7 @@ export default function Home() {
             </h2>
             <p className='mt-4 text-lg text-gray-600'>
               Chatting to your PDF files has never been
-              easier than with Quill.
+              easier than with YRC.
             </p>
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function Home() {
                 Start asking questions
               </span>
               <span className='mt-2 text-zinc-700'>
-                It&apos;s that simple. Try out Quill today -
+                It&apos;s that simple. Try out YRC today -
                 it really takes less than a minute.
               </span>
             </div>

@@ -4,6 +4,8 @@ import { redirect } from "next/navigation"
 import Dashboard from "@/components/Dashboard"
 import { db } from "@/db"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
+import { Suspense } from "react"
+import PageLoader from "@/components/PageLoader"
 
 const Page = async () => {
     const { getUser } = getKindeServerSession()
@@ -22,7 +24,13 @@ const Page = async () => {
 
     const subscriptionPlan = await getUserSubscriptionPlan()
 
-    return <Dashboard subscriptionPlan={subscriptionPlan} />
+    return (
+        <>
+            <Suspense fallback={<PageLoader />}>
+                <Dashboard subscriptionPlan={subscriptionPlan} />
+            </Suspense>
+        </>
+    )
 }
 
 export default Page
