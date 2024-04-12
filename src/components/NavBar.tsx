@@ -9,7 +9,7 @@ import {
 import { ArrowRight } from 'lucide-react'
 import UserAccountNav from './UserAccountNav'
 import MobileNav from './MobileNav'
-// import MobileNav from './MobileNav'
+import ToolsNav from './ToolsNav'
 
 const Navbar = async () => {
     const { getUser } = getKindeServerSession()
@@ -56,6 +56,7 @@ const Navbar = async () => {
                             </>
                         ) : (
                             <>
+                                <ToolsNav />
                                 <Link
                                     href='/dashboard'
                                     className={buttonVariants({
@@ -64,7 +65,6 @@ const Navbar = async () => {
                                     })}>
                                     Dashboard
                                 </Link>
-
                                 <UserAccountNav
                                     name={
                                         !user.given_name || !user.family_name

@@ -4,7 +4,6 @@ import { db } from "@/db"
 import PDFRenderer from "@/components/PDFRenderer"
 import ChatWrapper from "@/components/chat/ChatWrapper"
 import { Suspense } from "react"
-import { Loader } from "lucide-react"
 import PageLoader from "@/components/PageLoader"
 
 

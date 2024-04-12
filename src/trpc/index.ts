@@ -84,7 +84,6 @@ export const appRouter = router({
                 nextCursor
             }
         }),
-
     getFileUploadStatus: privateProcedure
         .input(z.object({ fileId: z.string() }))
         .query(async ({ input, ctx }) => {
@@ -123,6 +122,9 @@ export const appRouter = router({
         const userFiles = await db.user_files.findMany({
             where: {
                 userId: user?.id
+            },
+            include: {
+                messages: true,
             }
         })
         return { status: "success", files: userFiles }
@@ -142,6 +144,21 @@ export const appRouter = router({
 
             return file
         }),
+
+    getFileMessgesCount: privateProcedure
+        .input(z.object({ fileId: z.string() }))
+        .query(async ({ input }) => {
+            const messages = await db.message.findMany({
+                where: {
+                    fileId: input.fileId
+                }
+            })
+
+            if (!messages) return 0
+
+            return messages.length || 0
+        }),
+
     deleteFile: privateProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {

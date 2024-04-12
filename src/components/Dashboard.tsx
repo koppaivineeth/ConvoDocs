@@ -7,19 +7,21 @@ import Link from 'next/link'
 import Skeleteon from 'react-loading-skeleton'
 import { format } from 'date-fns'
 import { Button } from "./ui/button"
-import { useState } from "react"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
+import { useState } from "react"
 
 
 interface PageProps {
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
+    userId?: string
 }
-const Dashboard = ({ subscriptionPlan }: PageProps) => {
+const Dashboard = ({ subscriptionPlan, userId }: PageProps) => {
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
         null
     )
     const utils = trpc.useUtils()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
+
     const { mutate: deleteFile } = trpc.deleteFile.useMutation({
         onSuccess: () => {
             utils.getUserFiles.invalidate()
@@ -31,7 +33,6 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
             setCurrentlyDeletingFile(null)
         }
     })
-
     return (
         <main className="mx-auto max-w-7xl md:p-10">
             <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
@@ -64,8 +65,9 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
                                             {format(new Date(file.createdAt!), "MMM yyyy")}
                                         </div>
                                         <div className="flex items-center gap-2">
+                                            {/* Display file message count */}
                                             <MessageSquare className="h-4 w-4" />
-                                            Mocked
+                                            <span>{file.messages.length}</span>
                                         </div>
 
                                         <Button
