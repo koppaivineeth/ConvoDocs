@@ -96,7 +96,7 @@ export const appRouter = router({
             })
 
             if (!file) return { status: 'PENDING' as const }
-
+            console.log("file upload status = ", file)
             return { status: file.uploadStatus }
         }),
 

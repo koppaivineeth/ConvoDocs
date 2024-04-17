@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
+import { TextLoader } from 'langchain/document_loaders/fs/text'
 import { Pinecone } from "@pinecone-database/pinecone";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
@@ -41,7 +42,7 @@ const onUploadComplete = async ({
     })
 
     if (isFileExist) return
-    console.log("file Type == ", file)
+
     const createdFile = await db.user_files.create({
         data: {
             key: file.key,
@@ -57,7 +58,12 @@ const onUploadComplete = async ({
         const response = await fetch(file.url)
         const blob = await response.blob()
 
-        const loader = new PDFLoader(blob)
+        let loader
+        if (file.type === "pdf")
+            loader = new PDFLoader(blob)
+        else
+            loader = new TextLoader(blob)
+
         const pageLevelDocs = await loader.load()
 
         const pageAmt = pageLevelDocs.length

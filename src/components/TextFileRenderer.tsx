@@ -59,17 +59,20 @@ const TextFileRenderer = ({ url }: PdfRendererProps) => {
     }
 
     const loadFileFromURL = async (url: string) => {
-        if (url) {
-            const file = await fetch(url)
-            return (
-                <p>
-                    {
-                        file.text().then(t => t)
-                    }
-                </p>
-            )
+        try {
+            if (url) {
+                const file = await fetch(url)
+                return (
+                    <p className="p-5 max-h-[calc(100vh-10rem)] h-[calc(100vh-8rem)] overflow-y-auto">
+                        {
+                            file.text().then(t => t)
+                        }
+                    </p>
+                )
+            }
+        } catch {
+            throw new Error("Function not implemented.");
         }
-        throw new Error("Function not implemented.");
     }
 
     return <div className="w-full bg-white rounded-md shadow flex flex-col items-center">
