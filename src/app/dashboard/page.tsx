@@ -8,9 +8,9 @@ import { Suspense } from "react"
 import PageLoader from "@/components/PageLoader"
 
 const Page = async () => {
+
     const { getUser } = getKindeServerSession()
     const user = await getUser()
-
 
     if (!user || !user.id) redirect("/auth-callback?origin=dashboard")
 
@@ -19,7 +19,6 @@ const Page = async () => {
             userId: user.id
         }
     })
-
     if (!dbUser) redirect("/auth-callback?origin=dashboard")
 
     const subscriptionPlan = await getUserSubscriptionPlan()

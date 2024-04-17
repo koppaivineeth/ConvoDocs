@@ -8,6 +8,7 @@ CREATE TABLE "user_files" (
     "uploadStatus" "UploadStatus" NOT NULL DEFAULT 'PENDING',
     "url" VARCHAR(145) NOT NULL,
     "key" VARCHAR(145),
+    "fileType" VARCHAR(100),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" VARCHAR(50),
     "userId" VARCHAR(45) NOT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE "users" (
     "stripe_customer_id" TEXT,
     "stripe_subscription_id" TEXT,
     "stripe_price_id" TEXT,
-    "stripe_current_period_end" TIMESTAMP(3) NOT NULL,
+    "stripe_current_period_end" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("userEmail")
 );
@@ -54,3 +55,12 @@ CREATE UNIQUE INDEX "users_stripe_customer_id_key" ON "users"("stripe_customer_i
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_stripe_subscription_id_key" ON "users"("stripe_subscription_id");
+
+-- AddForeignKey
+ALTER TABLE "user_files" ADD CONSTRAINT "user_files_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "message" ADD CONSTRAINT "message_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("userId") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "message" ADD CONSTRAINT "message_fileId_fkey" FOREIGN KEY ("fileId") REFERENCES "user_files"("fileId") ON DELETE SET NULL ON UPDATE CASCADE;

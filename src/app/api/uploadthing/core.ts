@@ -31,6 +31,7 @@ const onUploadComplete = async ({
         key: string
         name: string
         url: string
+        type: string
     }
 }) => {
     const isFileExist = await db.user_files.findFirst({
@@ -40,7 +41,7 @@ const onUploadComplete = async ({
     })
 
     if (isFileExist) return
-
+    console.log("file Type == ", file)
     const createdFile = await db.user_files.create({
         data: {
             key: file.key,
@@ -48,6 +49,7 @@ const onUploadComplete = async ({
             userId: metadata.user,
             url: file.url,
             uploadStatus: 'PROCESSING',
+            fileType: file.type
         },
     })
 
@@ -112,10 +114,16 @@ const onUploadComplete = async ({
 }
 
 export const ourFileRouter = {
-    freePlanUploader: f({ pdf: { maxFileSize: "4MB" } })
+    freePlanUploader: f({
+        pdf: { maxFileSize: "4MB" },
+        text: { maxFileSize: "4MB" }
+    })
         .middleware(middleware)
         .onUploadComplete(onUploadComplete),
-    proPlanUploader: f({ pdf: { maxFileSize: "16MB" } })
+    proPlanUploader: f({
+        pdf: { maxFileSize: "16MB" },
+        text: { maxFileSize: "16MB" }
+    })
         .middleware(middleware)
         .onUploadComplete(onUploadComplete)
 } satisfies FileRouter;

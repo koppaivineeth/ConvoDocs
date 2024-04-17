@@ -49,7 +49,7 @@ const Dashboard = ({ subscriptionPlan, userId }: PageProps) => {
                         files.files.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
                             .map((file) => (
                                 <li key={file.fileId} className='col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg'>
-                                    <Link href={`/dashboard/${file.fileId}`} className="flex flex-col gap-2">
+                                    <Link href={file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""} className="flex flex-col gap-2">
                                         <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                                             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
                                             <div className='flex-1 truncate'>

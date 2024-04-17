@@ -11,6 +11,7 @@ import { PLANS } from '@/config/stripe';
 
 export const appRouter = router({
     authCallback: publicProcedure.query(async () => {
+        debugger
         const { getUser } = getKindeServerSession()
         const user = await getUser()
 
@@ -23,6 +24,7 @@ export const appRouter = router({
                 userEmail: user.email
             }
         })
+
         if (!dbUser) {
             await db.users.create({
                 data: {
@@ -32,7 +34,6 @@ export const appRouter = router({
                 }
             })
         }
-
         return { success: true }
     }),
 

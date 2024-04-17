@@ -21,6 +21,7 @@ model user_files {
   uploadStatus UploadStatus @default(PENDING)
   url          String       @db.VarChar(145)
   key          String?      @db.VarChar(145)
+  fileType     String?      @db.VarChar(100)
 
   messages message[]
 

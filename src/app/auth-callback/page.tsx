@@ -10,7 +10,6 @@ const Page = () => {
     const searchParams = useSearchParams()
     const origin = searchParams.get('origin')
     const { data, error } = trpc.authCallback.useQuery(undefined)
-
     if (data?.success) {
         router.push(origin ? `/${origin}` : "/dashboard");
     } else if (error?.data?.code === "UNAUTHORIZED") {
