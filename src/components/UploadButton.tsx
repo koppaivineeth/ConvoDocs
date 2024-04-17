@@ -104,7 +104,7 @@ const UploadDropzone = ({
                                     </span> {' '}
                                     or drag and drop
                                 </p>
-                                <p className="text-xs text-zinc-500">PDF (up to {isSubscribed ? "16" : "4"} MB)</p>
+                                <p className="text-xs text-zinc-500">PDF/Text file (up to {isSubscribed ? "16" : "4"} MB)</p>
                             </div>
                             {acceptedFiles && acceptedFiles[0] ? (
                                 <div className="max-w-xs bg-white flex items-center rounded-md overflow-hidden outline outline-[1px] outline-zinc-200 divide-x divide-zinc-200">
@@ -161,7 +161,7 @@ const UploadButton = ({
             }
         }}>
             <DialogTrigger onClick={() => setIsOpen(true)} asChild>
-                <Button>Upload PDF</Button>
+                <Button>Upload PDF/Text</Button>
             </DialogTrigger>
             <DialogContent>
                 <UploadDropzone isSubscribed={isSubscribed} />

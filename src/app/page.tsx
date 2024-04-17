@@ -123,9 +123,10 @@ export default function Home() {
                 Step 2
               </span>
               <span className='text-xl font-semibold'>
-                Upload your PDF file
+                Upload your file
               </span>
               <span className='mt-2 text-zinc-700'>
+                You can upload PDF or plain text file.
                 We&apos;ll process your file and make it
                 ready for you to chat with.
               </span>

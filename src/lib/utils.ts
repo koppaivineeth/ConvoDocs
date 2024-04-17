@@ -17,13 +17,13 @@ export function constructMetadata({
   title = "ConvoDocs",
   description = "ConvoDocs is an open-source software to make chatting to your PDF files easy.",
   image = "/thumbnail.png",
-  icons = "/favicon.ico",
+  icons = { icon: "/icon.ico" },
   noIndex = false
 }: {
   title?: string
   description?: string
   image?: string
-  icons?: string
+  icons?: object
   noIndex?: boolean
 } = {}): Metadata {
   return {
