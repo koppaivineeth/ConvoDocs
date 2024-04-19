@@ -17,7 +17,7 @@ interface BillingFormProps {
 
 const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
     const { toast } = useToast()
-
+    console.log("subscriptionPlan = ", subscriptionPlan)
 
     const { mutate: createStripeSession, isPending } = trpc.createStripeSession.useMutation({
         onSuccess: ({ url }) => {

@@ -31,13 +31,13 @@ export async function POST(request: Request) {
             status: 200,
         })
     }
-
+    console.log("stripe event = ", event)
     if (event.type === 'checkout.session.completed') {
         const subscription =
             await stripe.subscriptions.retrieve(
                 session.subscription as string
             )
-
+        console.log("checkout subscription object = ", subscription)
         await db.users.update({
             where: {
                 userId: session.metadata.userId,
@@ -59,6 +59,7 @@ export async function POST(request: Request) {
             await stripe.subscriptions.retrieve(
                 session.subscription as string
             )
+        console.log("invoice subscription object = ", subscription)
 
         await db.users.update({
             where: {

@@ -12,6 +12,8 @@ export async function getUserSubscriptionPlan() {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
+  console.log("getUserSubscriptionPlan user = ", user)
+
   if (!user?.id) {
     return {
       ...PLANS[0],
@@ -26,6 +28,7 @@ export async function getUserSubscriptionPlan() {
       userId: user.id,
     },
   })
+  console.log("getUserSubscriptionPlan dbuser = ", dbUser)
 
   if (!dbUser) {
     return {
@@ -35,6 +38,7 @@ export async function getUserSubscriptionPlan() {
       stripeCurrentPeriodEnd: null,
     }
   }
+  console.log("getUserSubscriptionPlan subscribed dbuser = ", dbUser)
 
   const isSubscribed = Boolean(
     dbUser.stripePriceId &&

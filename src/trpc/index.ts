@@ -186,21 +186,24 @@ export const appRouter = router({
     createStripeSession: privateProcedure.mutation(async ({ ctx }) => {
         const { userId } = ctx
 
-        const billingUrl = absoluteUrl("/dashboard/billing")
-
+        const billingUrl = absoluteUrl("/billing")
+        console.log("CREATE STRIPE SESSION ========")
         if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" })
+        console.log("CREATE STRIPE SESSION USER ======== ", userId)
 
         const dbUser = await db.users.findFirst({
             where: {
                 userId: userId
             }
         })
+        console.log("CREATE STRIPE SESSION DBUSER ======== ", dbUser)
 
         if (!dbUser) throw new TRPCError({ code: "UNAUTHORIZED" })
 
         //If user is already subscribed, take user to manage subscription, if not, they can subscribe
 
         const subscriptionPlan = await getUserSubscriptionPlan()
+        console.log("CREATE STRIPE SESSION subscriptionPlan ======== ", subscriptionPlan)
 
         if (subscriptionPlan.isSubscribed && dbUser.stripeCustomerId) {
             const stripeSession = await stripe.billingPortal.sessions.create({
@@ -225,7 +228,7 @@ export const appRouter = router({
                 userId: userId
             }
         })
-
+        console.log("return stripeSession = ", stripeSession)
         return { url: stripeSession.url }
 
     })
