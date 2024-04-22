@@ -37,16 +37,7 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
         }
     })
     const toggleSelectAll = () => setIsAllSeleted((prev) => !prev)
-    const addFileToSelection = (file) => {
-        selectedFiles.push(file)
-        console.log("selectedFIles = ", selectedFiles)
-    }
-    const checkIsSelected = (file) => {
-        let selectedFile = selectedFiles.find((selectedFile) => selectedFile.fileId === file.fileId)
-        console.log("check Is selected = ", !!selectedFile, file)
 
-        return selectedFile
-    }
     return (
         <main className="mx-auto max-w-7xl md:p-10">
             <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
