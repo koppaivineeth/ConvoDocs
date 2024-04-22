@@ -26,7 +26,7 @@ const Page = async () => {
     return (
         <>
             <Suspense fallback={<PageLoader />}>
-                <Dashboard subscriptionPlan={subscriptionPlan} userId={user.id} />
+                <Dashboard subscriptionPlan={subscriptionPlan} />
             </Suspense>
         </>
     )

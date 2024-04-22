@@ -19,6 +19,7 @@ const UploadDropzone = ({
     const router = useRouter()
     const [isUploading, setIsUploading] = useState<boolean>(false)
     const [uploadProgress, setUploadProgress] = useState<number>(0)
+    const [uploadError, setUploadError] = useState<boolean>(false)
 
     const { toast } = useToast()
     const { startUpload } = useUploadThing(
@@ -56,15 +57,17 @@ const UploadDropzone = ({
         <Dropzone
             multiple={false}
             onDrop={async (acceptedFile) => {
+                setUploadError(false)
                 setIsUploading(true)
                 const progressInterval = startSimulatedProgress()
-
                 //handle file uploading
                 const res = await startUpload(acceptedFile)
                 if (!res) {
+                    setUploadProgress(100)
+                    setUploadError(true)
                     return toast({
                         title: "Something went wrong !",
-                        description: "Please try again later",
+                        description: "Please check the file type and size and try again",
                         variant: "destructive"
                     })
                 }
@@ -123,10 +126,11 @@ const UploadDropzone = ({
                                         value={uploadProgress}
                                         className="h-1 w-full bg-zinc-200"
                                         indicatorColor={
-                                            uploadProgress === 100 ? 'bg-green-500' : ''
+                                            uploadError ? 'bg-red-500' :
+                                                (uploadProgress === 100 ? 'bg-green-500' : '')
                                         }
                                     />
-                                    {uploadProgress === 100 ? (
+                                    {uploadProgress === 100 && !uploadError ? (
                                         <div className='flex gap-1 items-center justify-center text-sm text-zinc-700 text-center pt-2'>
                                             <Loader2 className='h-3 w-3 animate-spin' />
                                             Redirecting...
@@ -140,6 +144,7 @@ const UploadDropzone = ({
                                 type="file"
                                 id="dropzone-file"
                                 className="hidden"
+                                onClick={e => e.preventDefault()}
                             />
                         </label>
                     </div>

@@ -2,25 +2,28 @@
 
 import { trpc } from "@/app/_trpc/client"
 import UploadButton from "./UploadButton"
-import { Ghost, Loader2, MessageSquare, Plus, Trash } from "lucide-react"
+import { Ghost, Loader2, MessageSquare, Plus, Trash, CircleCheck, Circle, Check } from "lucide-react"
 import Link from 'next/link'
 import Skeleteon from 'react-loading-skeleton'
 import { format } from 'date-fns'
 import { Button } from "./ui/button"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
 import { useState } from "react"
+import { cn } from "@/lib/utils"
 
 
 interface PageProps {
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
-    userId?: string
 }
-const Dashboard = ({ subscriptionPlan, userId }: PageProps) => {
+const Dashboard = ({ subscriptionPlan }: PageProps) => {
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
         null
     )
+    const [isAllSeleted, setIsAllSeleted] = useState<boolean>(false)
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const utils = trpc.useUtils()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
+
 
     const { mutate: deleteFile } = trpc.deleteFile.useMutation({
         onSuccess: () => {
@@ -33,6 +36,17 @@ const Dashboard = ({ subscriptionPlan, userId }: PageProps) => {
             setCurrentlyDeletingFile(null)
         }
     })
+    const toggleSelectAll = () => setIsAllSeleted((prev) => !prev)
+    const addFileToSelection = (file) => {
+        selectedFiles.push(file)
+        console.log("selectedFIles = ", selectedFiles)
+    }
+    const checkIsSelected = (file) => {
+        let selectedFile = selectedFiles.find((selectedFile) => selectedFile.fileId === file.fileId)
+        console.log("check Is selected = ", !!selectedFile, file)
+
+        return selectedFile
+    }
     return (
         <main className="mx-auto max-w-7xl md:p-10">
             <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
@@ -41,14 +55,51 @@ const Dashboard = ({ subscriptionPlan, userId }: PageProps) => {
                 </h1>
                 <UploadButton isSubscribed={subscriptionPlan.isSubscribed} />
             </div>
+            <div className="py-5 border-solid border-b-2">
+                <ul className="">
+                    <li className={cn("inline bg-white p-3 rounded-full", {
+                        "bg-slate-300": isAllSeleted
+                    })}
+                        onClick={() => toggleSelectAll()}>
+                        {isAllSeleted ? (
+                            <CircleCheck className="h-5 w-5 inline" />
+                        ) : (
+                            <Circle className="h-5 w-5 inline" />
+                        )}
 
+                        <span className="inline pl-3">Select All</span>
+                    </li>
+                    <li className="inline bg-white ml-10 p-3 rounded-full">
+                        <span className="ml-5">Delete All</span>
+                    </li>
+                </ul>
+            </div>
             {/* Display all user files */}
             {files && files.files && files.files?.length !== 0 ? (
                 <ul className="mt-8 grid grid-cols-1 gap-6 divide-y divide-zinc-200 md:grid-cols-2 lg:grid-cols-3">
                     {
                         files.files.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
                             .map((file) => (
-                                <li key={file.fileId} className='col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg'>
+                                <li key={file.fileId} className='relative col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg'>
+                                    <span className="absolute left-2 top-2"
+                                        onClick={() => {
+                                            const newFiles = [...selectedFiles]
+                                            if (newFiles.includes(file)) {
+                                                newFiles.splice(newFiles.indexOf(file), 1)
+                                            } else {
+                                                newFiles.push(file)
+                                            }
+                                            setSelectedFiles(newFiles)
+                                        }}
+                                    >
+                                        {selectedFiles.includes(file) ? (
+                                            <CircleCheck className="h-5 w-5" />
+                                        ) : (
+                                            <Circle className="h-5 w-5" />
+                                        )}
+
+                                        {/*  */}
+                                    </span>
                                     <Link href={file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""} className="flex flex-col gap-2">
                                         <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                                             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />

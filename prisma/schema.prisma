@@ -22,6 +22,7 @@ model user_files {
   url          String       @db.VarChar(145)
   key          String?      @db.VarChar(145)
   fileType     String?      @db.VarChar(100)
+  isSelected   Boolean?     @default(false)
 
   messages message[]
 

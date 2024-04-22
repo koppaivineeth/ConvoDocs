@@ -9,6 +9,7 @@ CREATE TABLE "user_files" (
     "url" VARCHAR(145) NOT NULL,
     "key" VARCHAR(145),
     "fileType" VARCHAR(100),
+    "isSelected" BOOLEAN DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" VARCHAR(50),
     "userId" VARCHAR(45) NOT NULL,

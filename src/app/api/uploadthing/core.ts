@@ -108,6 +108,7 @@ const onUploadComplete = async ({
             }
         })
     } catch (err) {
+        console.log("Uplaod err = ", err)
         await db.user_files.update({
             data: {
                 uploadStatus: 'FAILED'
