@@ -2,13 +2,13 @@
 
 import { trpc } from "@/app/_trpc/client"
 import UploadButton from "./UploadButton"
-import { Ghost, Loader2, MessageSquare, Plus, Trash, CircleCheck, Circle, Check } from "lucide-react"
+import { Ghost, Loader2, MessageSquare, Plus, Trash, CircleCheck, Circle, CircleMinus } from "lucide-react"
 import Link from 'next/link'
 import Skeleteon from 'react-loading-skeleton'
 import { format } from 'date-fns'
 import { Button } from "./ui/button"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 
 
@@ -20,7 +20,12 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
         null
     )
     const [isAllSeleted, setIsAllSeleted] = useState<boolean>(false)
-    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [isPartialSelect, setIsPartialSeleted] = useState<boolean>(false)
+    const [isFilesDeleting, setIsFilesDeleting] = useState<boolean>(false)
+    const [isSelectingAll, setIsSelectingAll] = useState<boolean>(false)
+    const [isFilesEmpty, setIsFilesEmpty] = useState<boolean>(false)
+    const [isAnyFileSelected, setIsAnyFileSelected] = useState<boolean>(false)
+    const [selectedFiles, setSelectedFiles] = useState<Array<Object>>([]);
     const utils = trpc.useUtils()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
 
@@ -36,7 +41,50 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
             setCurrentlyDeletingFile(null)
         }
     })
-    const toggleSelectAll = () => setIsAllSeleted((prev) => !prev)
+
+    const { mutate: deleteFiles } = trpc.deleteFiles.useMutation({
+        onSuccess: () => {
+            utils.getUserFiles.invalidate()
+        },
+        onMutate({ ids }) {
+            setIsFilesDeleting(true)
+        },
+        onSettled() {
+            setIsFilesDeleting(false)
+            setIsAllSeleted(false)
+            setIsPartialSeleted(false)
+        }
+    })
+    const selectAllFiles = () => {
+        let allFiles = files?.files || [];
+        setSelectedFiles(allFiles)
+        setIsAllSeleted((prev) => !prev)
+        setIsSelectingAll((prev) => !prev)
+        setIsAnyFileSelected(true)
+        isAllSeleted && deselectAllFiles()
+    }
+    const deselectAllFiles = () => {
+        const filesCopy = [...selectedFiles]
+        filesCopy.splice(0, filesCopy.length)
+        setSelectedFiles(filesCopy)
+        if (selectedFiles.length === 0) setIsAnyFileSelected(false)
+    }
+
+    const checkIsFileSelected = (file: Object) => {
+        return selectedFiles.includes(file)
+    }
+
+    const deleteAllFiles = () => {
+        const files = selectedFiles
+        if (selectedFiles.length !== 0) {
+            const fileIds = files.map((file) => file.fileId)
+            deleteFiles({ ids: fileIds })
+        }
+    }
+    useEffect(() => {
+        const isEmpty = files === null || files?.files.length === 0
+        setIsFilesEmpty(isEmpty)
+    }, [files])
 
     return (
         <main className="mx-auto max-w-7xl md:p-10">
@@ -47,23 +95,44 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
                 <UploadButton isSubscribed={subscriptionPlan.isSubscribed} />
             </div>
             <div className="py-5 border-solid border-b-2">
-                <ul className="">
-                    <li className={cn("inline bg-white p-3 rounded-full", {
-                        "bg-slate-300": isAllSeleted
-                    })}
-                        onClick={() => toggleSelectAll()}>
-                        {isAllSeleted ? (
-                            <CircleCheck className="h-5 w-5 inline" />
-                        ) : (
-                            <Circle className="h-5 w-5 inline" />
-                        )}
+                <div className="grid grid-flow-row grid-cols-2 gap-4">
+                    <div>
+                        <ul className="">
+                            <li className={cn("inline bg-white p-3 rounded-full cursor-pointer", {
+                                "bg-slate-300": isAllSeleted,
+                                "pointer-events-none opacity-60": isFilesEmpty
+                            })}
+                                onClick={() => selectAllFiles()}
+                            >
+                                {isAllSeleted ? (
+                                    <CircleCheck className="h-5 w-5 inline" />
+                                ) : selectedFiles.length === 0 ? (
+                                    <Circle className="h-5 w-5 inline" />
+                                ) : isPartialSelect ? (
+                                    <CircleMinus className="h-5 w-5 inline" />
+                                ) : (
+                                    <Circle className="h-5 w-5 inline" />
+                                )}
 
-                        <span className="inline pl-3">Select All</span>
-                    </li>
-                    <li className="inline bg-white ml-10 p-3 rounded-full">
-                        <span className="ml-5">Delete All</span>
-                    </li>
-                </ul>
+                                <span className="inline pl-3">Select All</span>
+                            </li>
+                            <li className={cn("inline ml-10 p-3 cursor-pointer  hover:text-blue-500", {
+                                "pointer-events-none opacity-60": !isAnyFileSelected || selectedFiles.length === 0
+                            })}
+                                onClick={() => deleteAllFiles()}
+                            >
+                                <span className="">Delete All</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="flex justify-center">
+                        {isFilesDeleting ? (
+                            <span className="h-5 w-5">
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                            </span>
+                        ) : null}
+                    </div>
+                </div>
             </div>
             {/* Display all user files */}
             {files && files.files && files.files?.length !== 0 ? (
@@ -71,7 +140,9 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
                     {
                         files.files.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
                             .map((file) => (
-                                <li key={file.fileId} className='relative col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg'>
+                                <li key={file.fileId} className={cn("relative col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg", {
+                                    "bg-blue-100": checkIsFileSelected(file)
+                                })}>
                                     <span className="absolute left-2 top-2"
                                         onClick={() => {
                                             const newFiles = [...selectedFiles]
@@ -80,6 +151,14 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
                                             } else {
                                                 newFiles.push(file)
                                             }
+                                            if (files.files.length > newFiles.length) {
+                                                setIsPartialSeleted(true)
+                                                setIsAllSeleted(false)
+                                            } else if (files.files.length === newFiles.length) {
+                                                setIsPartialSeleted(false)
+                                                setIsAllSeleted(true)
+                                            }
+
                                             setSelectedFiles(newFiles)
                                         }}
                                     >
@@ -91,7 +170,11 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
 
                                         {/*  */}
                                     </span>
-                                    <Link href={file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""} className="flex flex-col gap-2">
+                                    <Link href={
+                                        selectedFiles.includes(file) ? {} :
+                                            file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
+                                    }
+                                        className="flex flex-col gap-2">
                                         <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                                             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
                                             <div className='flex-1 truncate'>
@@ -116,6 +199,7 @@ const Dashboard = ({ subscriptionPlan }: PageProps) => {
                                             onClick={() => {
                                                 deleteFile({ id: file.fileId })
                                             }}
+                                            disabled={selectedFiles.includes(file)}
                                             size="sm" className="w-full" variant="destructive">
                                             {currentlyDeletingFile === file.fileId ? (
                                                 <Loader2 className="h-4 w-4 animate-spin" />

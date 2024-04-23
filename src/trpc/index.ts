@@ -165,7 +165,6 @@ export const appRouter = router({
         .mutation(async ({ ctx, input }) => {
             const { userId } = ctx;
             const { getUser } = getKindeServerSession()
-            const user = await getUser()
             const file = await db.user_files.findFirst({
                 where: {
                     fileId: input.id,
@@ -182,7 +181,21 @@ export const appRouter = router({
             })
             return file
         }),
-
+    deleteFiles: privateProcedure
+        .input(z.object({ ids: z.any() }))
+        .mutation(async ({ ctx, input }) => {
+            console.log("trps deleteall")
+            const { userId } = ctx;
+            await db.user_files.deleteMany({
+                where: {
+                    fileId: {
+                        in: input.ids
+                    },
+                    userId
+                }
+            })
+            return
+        }),
     createStripeSession: privateProcedure.mutation(async ({ ctx }) => {
         const { userId } = ctx
 
