@@ -26,7 +26,7 @@ const ToolsNav = () => {
                 <DropdownMenuItem asChild>
                     <Link
                         onClick={() => toggleOpen()}
-                        href='/pdf-chat/1'
+                        href='/pdf-chat'
                         className={buttonVariants({
                             variant: 'ghost',
                             size: 'sm',
@@ -37,7 +37,7 @@ const ToolsNav = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link
-                        href='/text-file-chat/1'
+                        href='/text-file-chat'
                         className={buttonVariants({
                             variant: 'ghost',
                             size: 'sm',

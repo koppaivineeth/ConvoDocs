@@ -5,7 +5,10 @@ import PDFRenderer from "@/components/PDFRenderer"
 import ChatWrapper from "@/components/chat/ChatWrapper"
 import { Suspense } from "react"
 import PageLoader from "@/components/PageLoader"
-
+import SideBar from "@/components/Sidebar"
+import { trpc } from "@/app/_trpc/client"
+import { Loader2 } from "lucide-react"
+import Link from "next/link"
 
 interface PageProps {
     params: {
@@ -21,6 +24,14 @@ const Page = async ({ params }: PageProps) => {
 
     if (!user || !user.id) redirect(`/auth-callback?origin=dashboard/${fileId}`)
 
+    const files = await db.user_files.findMany({
+        where: {
+            userId: user?.id
+        }
+    })
+
+    if (!files) notFound()
+
     const file = await db.user_files.findFirst({
         where: {
             fileId: fileId
@@ -32,6 +43,26 @@ const Page = async ({ params }: PageProps) => {
     return (
         <>
             <Suspense fallback={<PageLoader />}>
+                <SideBar>
+                    {
+                        <ul>
+                            {files && files.map((file) => (
+                                <li key={file.fileId} className="text-xs cursor-pointer pb-3 pt-3 border-b border-solid border-zinc-200">
+                                    <Link href={
+                                        file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
+                                    }
+                                        className="flex flex-col gap-2"
+                                    >
+                                        {file.fileName}
+                                    </Link>
+
+                                </li>
+                            ))}
+                        </ul>
+                    }
+
+
+                </SideBar>
                 <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.5rem)] overflow-hidden pb-10">
                     <div className="mx-auto w-full max-w-8xl grow lg:flex xl:px-2">
                         {/* left side - pdf view */}

@@ -28,11 +28,10 @@ const UploadDropzone = ({
 
     const { mutate: startPolling } = trpc.getFile.useMutation({
         onSuccess: (file) => {
-            // if (file.fileType === "pdf")
-            //     router.push(`/pdf-chat/${file.fileId}`)
-            // else
-            //     router.push(`/text-file-chat/${file.fileId}`)
-            router.push('/dashboard')
+            if (file.fileType === "pdf")
+                router.push(`/pdf-chat/${file.fileId}`)
+            else
+                router.push(`/text-file-chat/${file.fileId}`)
         },
         retry: true,
         retryDelay: 500

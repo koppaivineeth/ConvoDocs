@@ -51,3 +51,8 @@ export function constructMetadata({
     })
   }
 }
+
+let globals = {
+  isDeleteConfirmed: false
+}
+export default globals
