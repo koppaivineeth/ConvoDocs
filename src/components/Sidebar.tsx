@@ -31,18 +31,11 @@ const SideBar = ({ children }: PageProps) => {
                         onClick={() => setIsSideBarOpen((prev) => !prev)}
                     />
                 </div>
-                <div className="p-3 title text-center mt-5 mb-5 static text-lg">
-                    <span>
-                        Choose a file
-                    </span>
-                </div>
-                <div className="file-list flex justify-center overflow-auto h-[calc(100vh-14rem)] pb-3">
-                    {
-                        children ? (
-                            children
-                        ) : null
-                    }
-                </div>
+                {
+                    children ? (
+                        children
+                    ) : null
+                }
             </div>
         </>
     )
