@@ -12,9 +12,11 @@ import { trpc } from "@/app/_trpc/client"
 import { useRouter } from "next/navigation"
 
 const UploadDropzone = ({
-    isSubscribed
+    isSubscribed,
+    fileType
 }: {
     isSubscribed: boolean
+    fileType: string
 }) => {
     const router = useRouter()
     const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -58,6 +60,15 @@ const UploadDropzone = ({
             multiple={false}
             onDrop={async (acceptedFile) => {
                 setUploadError(false)
+                let displayType = fileType.includes("pdf") ? "PDF" : fileType.includes("text") ? "text" : fileType
+                if (!acceptedFile[0]?.type.includes(fileType) && fileType !== "all") {
+                    setUploadError(true)
+                    return toast({
+                        title: "Something went wrong !",
+                        description: `You have not choosen ${displayType} file`,
+                        variant: "destructive"
+                    })
+                }
                 setIsUploading(true)
                 const progressInterval = startSimulatedProgress()
                 //handle file uploading
@@ -107,7 +118,7 @@ const UploadDropzone = ({
                                     </span> {' '}
                                     or drag and drop
                                 </p>
-                                <p className="text-xs text-zinc-500">PDF/Text file (up to {isSubscribed ? "16" : "4"} MB)</p>
+                                <p className="text-xs text-zinc-500">{fileType.includes("pdf") ? "PDF" : fileType.includes("text") ? "Text" : "PDF/Text"} file (up to {isSubscribed ? "16" : "4"} MB)</p>
                             </div>
                             {acceptedFiles && acceptedFiles[0] ? (
                                 <div className="max-w-xs bg-white flex items-center rounded-md overflow-hidden outline outline-[1px] outline-zinc-200 divide-x divide-zinc-200">
@@ -153,9 +164,17 @@ const UploadDropzone = ({
         </Dropzone>)
 }
 const UploadButton = ({
-    isSubscribed
+    isSubscribed,
+    buttonClass,
+    elementType,
+    uploadButtonText,
+    fileType
 }: {
     isSubscribed: boolean
+    buttonClass?: string
+    elementType: string
+    uploadButtonText?: string
+    fileType: string
 }) => {
     const [isOpen, setIsOpen] = useState(false)
 
@@ -166,10 +185,16 @@ const UploadButton = ({
             }
         }}>
             <DialogTrigger onClick={() => setIsOpen(true)} asChild>
-                <Button>Upload PDF/Text</Button>
+                {
+                    elementType === 'button' ? (
+                        <Button className={buttonClass}>{uploadButtonText ? uploadButtonText : "Upload PDF/Text"}</Button>
+                    ) : elementType === 'link' ? (
+                        <span className="cursor-pointer underline mt-5">{uploadButtonText ? uploadButtonText : "Upload PDF/Text"}</span>
+                    ) : null
+                }
             </DialogTrigger>
             <DialogContent>
-                <UploadDropzone isSubscribed={isSubscribed} />
+                <UploadDropzone isSubscribed={isSubscribed} fileType={fileType} />
             </DialogContent>
         </Dialog >
     )

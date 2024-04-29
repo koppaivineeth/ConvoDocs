@@ -102,3 +102,7 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #7F7F7F;
 }
+
+div.collapsible-sidebar::-webkit-scrollbar {
+  width: 17px;
+}

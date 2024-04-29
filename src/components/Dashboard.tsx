@@ -16,9 +16,10 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
 interface PageProps {
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
     fileType: string
+    uploadFileType: string
 }
 
-const Dashboard = ({ subscriptionPlan, fileType }: PageProps) => {
+const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) => {
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
         null
     )
@@ -95,7 +96,7 @@ const Dashboard = ({ subscriptionPlan, fileType }: PageProps) => {
                     <h1 className="mb-3 font-bold text-5xl text-gray-900">
                         My Files
                     </h1>
-                    <UploadButton isSubscribed={subscriptionPlan.isSubscribed} />
+                    <UploadButton isSubscribed={subscriptionPlan.isSubscribed} elementType='button' uploadButtonText={fileType === "pdf" ? "Upload PDF" : fileType === "all" ? "Upload PDF/Text" : "Upload text file"} fileType={uploadFileType} />
                 </div>
                 <div className="py-5 border-solid border-b-2">
                     <div className="grid grid-flow-row grid-cols-2 gap-4">

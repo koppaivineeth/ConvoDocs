@@ -25,7 +25,7 @@ const Page = async () => {
     return (
         <>
             <Suspense fallback={<PageLoader />}>
-                <Dashboard subscriptionPlan={subscriptionPlan} fileType="text" />
+                <Dashboard subscriptionPlan={subscriptionPlan} fileType="text" uploadFileType="text/plain text" />
             </Suspense>
         </>
     )

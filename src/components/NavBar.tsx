@@ -56,7 +56,6 @@ const Navbar = async () => {
                             </>
                         ) : (
                             <>
-                                <ToolsNav />
                                 <Link
                                     href='/dashboard'
                                     className={buttonVariants({

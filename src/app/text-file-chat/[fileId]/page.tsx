@@ -5,6 +5,10 @@ import ChatWrapper from "@/components/chat/ChatWrapper"
 import { Suspense } from "react"
 import PageLoader from "@/components/PageLoader"
 import TextFileRenderer from "@/components/TextFileRenderer"
+import SideBar from "@/components/Sidebar"
+import Link from "next/link"
+import UploadButton from "@/components/UploadButton"
+import { getUserSubscriptionPlan } from "@/lib/stripe"
 
 
 interface PageProps {
@@ -21,6 +25,14 @@ const Page = async ({ params }: PageProps) => {
 
     if (!user || !user.id) redirect(`/auth-callback?origin=dashboard/${fileId}`)
 
+    const files = await db.user_files.findMany({
+        where: {
+            userId: user?.id
+        }
+    })
+
+    if (!files) notFound()
+
     const file = await db.user_files.findFirst({
         where: {
             fileId: fileId
@@ -29,9 +41,41 @@ const Page = async ({ params }: PageProps) => {
 
     if (!file) notFound()
 
+    const subscriptionPlan = await getUserSubscriptionPlan()
+
     return (
         <>
             <Suspense fallback={<PageLoader />}>
+                <SideBar>
+                    <div className="flex justify-center">
+                        <UploadButton buttonClass="bg-white text-blue-600 mt-5" isSubscribed={subscriptionPlan.isSubscribed} elementType='link' uploadButtonText="Upload new Text file" fileType="pdf" />
+                    </div>
+                    <div className="border p-3 mt-3 h-[calc(100vh-12rem)]">
+                        <div className="p-3 title text-center mt-5 mb-5 static text-lg">
+                            <span>
+                                Click a file
+                            </span>
+                        </div>
+                        <div className="file-list flex justify-center overflow-auto h-[76%] pb-3">
+                            {
+                                <ul>
+                                    {files && files.map((file) => (
+                                        <li key={file.fileId} className="text-xs cursor-pointer pb-3 pt-3 border-b border-solid border-zinc-200">
+                                            <Link href={
+                                                file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
+                                            }
+                                                className="flex flex-col gap-2"
+                                            >
+                                                {file.fileName}
+                                            </Link>
+
+                                        </li>
+                                    ))}
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </SideBar>
                 <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.5rem)] overflow-hidden pb-10">
                     <div className="mx-auto w-full max-w-8xl grow lg:flex xl:px-2">
                         {/* left side - pdf view */}
