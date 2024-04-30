@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <Providers>
-        <body className={cn('min-h-screen font-sans antialiased grainy overflow-hidden', inter.className)}>
+        <body className={cn('min-h-screen font-sans antialiased grainy', inter.className)}>
           <Toaster />
           <Navbar />
           {children}

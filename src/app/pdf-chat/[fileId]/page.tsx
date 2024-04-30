@@ -49,7 +49,7 @@ const Page = async ({ params }: PageProps) => {
                     <div className="flex justify-center">
                         <UploadButton buttonClass="bg-white text-blue-600 mt-5" isSubscribed={subscriptionPlan.isSubscribed} elementType='link' uploadButtonText="Upload new PDF" fileType="pdf" />
                     </div>
-                    <div className="border p-3 mt-3 h-[calc(100vh-3.5rem)]">
+                    <div className="border p-3 mt-3 h-[calc(100vh-12rem)]">
                         <div className="p-3 title text-center mt-5 mb-5 static text-lg">
                             <span>
                                 Click a file

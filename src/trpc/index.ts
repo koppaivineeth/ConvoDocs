@@ -11,7 +11,6 @@ import { PLANS } from '@/config/stripe';
 
 export const appRouter = router({
     authCallback: publicProcedure.query(async () => {
-        debugger
         const { getUser } = getKindeServerSession()
         const user = await getUser()
 
@@ -184,7 +183,6 @@ export const appRouter = router({
     deleteFiles: privateProcedure
         .input(z.object({ ids: z.any() }))
         .mutation(async ({ ctx, input }) => {
-            console.log("trps deleteall")
             const { userId } = ctx;
             await db.user_files.deleteMany({
                 where: {

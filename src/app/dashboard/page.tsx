@@ -27,9 +27,6 @@ const Page = async () => {
 
     return (
         <>
-            {/* <Suspense fallback={<PageLoader />}>
-                <Dashboard subscriptionPlan={subscriptionPlan} fileType="all" uploadFileType="all" /> 
-            </Suspense> */}
             <Suspense fallback={<PageLoader />}>
                 <div className="grid-container select-none flex h-screen m-auto justify-center items-center w-full gap-20">
                     <div className="pdf-page-link text-center w-full flex justify-end h-48">

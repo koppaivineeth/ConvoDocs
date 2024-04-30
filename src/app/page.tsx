@@ -163,6 +163,23 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Footer section */}
+      <div className='home-footer border-t border-slate-200 p-5 grid grid-cols-4'>
+        <div className='flex justify-center pl-16'>
+          <ul>
+            <h1 className='font-bold mb-5'>Resources</h1>
+            <li><Link href="/contact-us" className='leading-10'>Contact Us</Link></li>
+            <li><Link href="" className='leading-10'>Terms of Service</Link></li>
+            <li><Link href="" className='leading-10'>Privacy Policy</Link></li>
+          </ul>
+        </div>
+        <div></div>
+        <div className='resources'>
+
+        </div>
+        <div className=''></div>
+      </div>
     </>
   )
 }
