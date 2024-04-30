@@ -50,9 +50,12 @@ const Page = () => {
 
         fetch('/api/contact-us', {
             method: 'POST',
-            body: null
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(values)
         }).then((data) => {
-            console.log("data = ", data.ok)
+            console.log(data)
             setIsSuccess(data.ok)
             setIsSending(false)
             setShowMessage(true)
