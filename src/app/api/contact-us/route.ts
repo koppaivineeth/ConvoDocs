@@ -2,16 +2,19 @@ import { NextResponse, NextRequest } from 'next/server'
 import { AccountApi, AccountApiApiKeys, SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo"
 import { EmailTemplate } from '@/lib/Email-template';
 
-export const getBrevoDetails = () => {
+export const GET = async () => {
     let apiInstance = new AccountApi()
     apiInstance.setApiKey(AccountApiApiKeys.apiKey, process.env.BREVO_KEY!)
 
-    apiInstance.getAccount().then((data) => {
+    return apiInstance.getAccount().then((data) => {
         console.log("Brevo API called successfully. Returned data: ", JSON.stringify(data))
+        return
     },
         (error) => {
             console.log("Brevo API faileed, returned error: ", error)
+            throw new Error
         })
+
 }
 export const POST = async (req: NextRequest) => {
     try {

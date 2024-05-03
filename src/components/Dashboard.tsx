@@ -18,7 +18,16 @@ interface PageProps {
     fileType: string
     uploadFileType: string
 }
-
+interface selectedFileObject {
+    fileId: string
+    fileName: string
+    uploadStatus: string
+    url: string
+    key?: string
+    fileType?: string
+    isSelected?: boolean
+    messages?: []
+}
 const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) => {
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
         null
@@ -29,10 +38,10 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
     const [isOpen, setIsOpen] = useState(false)
     const [isFilesEmpty, setIsFilesEmpty] = useState<boolean>(false)
     const [isAnyFileSelected, setIsAnyFileSelected] = useState<boolean>(false)
-    const [selectedFiles, setSelectedFiles] = useState<Array<Object>>([]);
+    const [selectedFiles, setSelectedFiles] = useState<any>([]);
     const utils = trpc.useUtils()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
-
+    // let selectedFiles: any[] = []
 
     const { mutate: deleteFile } = trpc.deleteFile.useMutation({
         onSuccess: () => {
@@ -60,7 +69,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
         }
     })
     const selectAllFiles = () => {
-        let allFiles = files?.files || [];
+        let allFiles = files?.files
         setSelectedFiles(allFiles)
         setIsAllSeleted((prev) => !prev)
         setIsAnyFileSelected(true)
@@ -73,14 +82,14 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
         if (selectedFiles.length === 0) setIsAnyFileSelected(false)
     }
 
-    const checkIsFileSelected = (file: Object) => {
+    const checkIsFileSelected = (file: any) => {
         return selectedFiles.includes(file)
     }
 
     const deleteAllFiles = () => {
         const files = selectedFiles
         if (selectedFiles.length !== 0) {
-            const fileIds = files.map((file) => file.fileId)
+            const fileIds = files.map((file: { fileId: any }) => file.fileId)
             deleteFiles({ ids: fileIds })
         }
     }
