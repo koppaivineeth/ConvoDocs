@@ -18,6 +18,7 @@ import { trpc } from "../_trpc/client"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Textarea } from "@/components/ui/textarea"
 
 const formSchema = z.object({
     firstName: z.string().min(1, {
@@ -39,6 +40,10 @@ const Page = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            message: ""
         },
     })
     const [isSending, setIsSending] = useState(false)
@@ -47,7 +52,6 @@ const Page = () => {
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         setIsSending(true)
-
         fetch('/api/contact-us', {
             method: 'POST',
             headers: {
@@ -55,13 +59,12 @@ const Page = () => {
             },
             body: JSON.stringify(values)
         }).then((data) => {
-            console.log(data)
             setIsSuccess(data.ok)
             setIsSending(false)
             setShowMessage(true)
+            form.reset()
         })
     }
-
     return (
         <>
             <div className="text-center">
@@ -76,8 +79,9 @@ const Page = () => {
                                 name="firstName"
                                 render={({ field }) => (
                                     <FormItem>
+                                        <FormLabel>First Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="First Name" {...field} />
+                                            <Input {...field} placeholder="John" />
                                         </FormControl>
                                         <div className="error-message h-4">
                                             <FormMessage className="text-red-600 text-[10px] italic" />
@@ -90,8 +94,9 @@ const Page = () => {
                                 name="lastName"
                                 render={({ field }) => (
                                     <FormItem>
+                                        <FormLabel>Last Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Last Name" {...field} />
+                                            <Input {...field} placeholder="Will" />
                                         </FormControl>
                                         <div className="error-message h-4">
                                             <FormMessage className="text-red-600 text-[10px] italic" />
@@ -106,8 +111,9 @@ const Page = () => {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
+                                        <FormLabel>Email address</FormLabel>
                                         <FormControl>
-                                            <Input type="email" placeholder="Email" {...field} />
+                                            <Input {...field} type="email" placeholder="john.will@gmail.com" />
                                         </FormControl>
                                         <div className="error-message h-4">
                                             <FormMessage className="text-red-600 text-[10px] italic" />
@@ -122,8 +128,9 @@ const Page = () => {
                                 name="message"
                                 render={({ field }) => (
                                     <FormItem>
+                                        <FormLabel>Your message</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Message" {...field} />
+                                            <Textarea minRows={4} {...field} placeholder="Message" />
                                         </FormControl>
                                         <div className="error-message h-4">
                                             <FormMessage className="text-red-600 text-[10px] italic" />

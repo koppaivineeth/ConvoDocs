@@ -1,57 +1,49 @@
 import { NextResponse, NextRequest } from 'next/server'
+import { AccountApi, AccountApiApiKeys, SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo"
+import { EmailTemplate } from '@/lib/Email-template';
 
-// export const POST = async (req: NextRequest) => {
-//     // const body = await req.json()
-//     console.log("BODY = ", req.body)
-//     return new Response("Success", {
-//         status: 200,
-//     })
-// }
+export async function getBrevoDetails() {
+    let apiInstance = new AccountApi()
+    apiInstance.setApiKey(AccountApiApiKeys.apiKey, process.env.BREVO_KEY!)
 
-import { EmailTemplate } from '@/components/Email-template';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { Resend } from 'resend';
-const nodemailer = require('nodemailer');
-
-// const resend = new Resend(process.env.RESEND_API_KEY);
-
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-    try {
-        console.log("API body", req.body)
-        console.log("API body", res)
-        let body = req.body
-        const transporter = nodemailer.createTransport({
-            service: "Gmail",
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
-            auth: {
-                user: "ConvoDocs",
-                pass: "wthq ohoc todq yngj"
-            }
-        });
-        // const { data, error } = await resend.emails.send({
-        //     from: 'ConvoDocs<convodocs@gmail.com>',
-        //     to: ['convodocs@gmail.com'],
-        //     subject: 'Contact us',
-        //     text: "",
-        //     react: EmailTemplate({ firstName: body.firstName, lastName: body.lastName, userEmail: body.email, message: body.message }),
-        // });
-        const mail = await transporter.sendMail({
-            from: "convodocs7@gmail.com",
-            to: 'convodocs7@gmail.com',
-            // replyTo: email,
-            subject: `Contact form`,
-            html: `
-            <p>Name: ${body.firstName} ${body.lastName}</p>
-            <p>Email: ${body.email} </p>
-            <p>Message: ${body.message} </p>
-            `,
+    apiInstance.getAccount().then((data) => {
+        console.log("Brevo API called successfully. Returned data: ", JSON.stringify(data))
+    },
+        (error) => {
+            console.log("Brevo API faileed, returned error: ", error)
         })
+}
+export const POST = async (req: NextRequest) => {
+    try {
+        const body = await req.json()
+        let apiInstance = new AccountApi()
+        apiInstance.setApiKey(AccountApiApiKeys.apiKey, process.env.BREVO_KEY!)
+        let sendSmtpEmail = new SendSmtpEmail()
 
-        return NextResponse.json({ message: "Success: email was sent" })
+        sendSmtpEmail.subject = "Message from ConvoDocs.com"
+        sendSmtpEmail.htmlContent = EmailTemplate(body.firstName, body.lastName, body.email, body.message)
+        console.log("emailTemplae = ", sendSmtpEmail.htmlContent)
+        sendSmtpEmail.sender = { "name": "Convo Docs", "email": "convodocs7@gmail.com" }
+        sendSmtpEmail.to = [{ "name": "Convo Docs", "email": "convodocs7@gmail.com" }]
+        sendSmtpEmail.headers = { "Authentication": process.env.BREVO_KEY! }
+
+        let transacEmailAPI = new TransactionalEmailsApi()
+        transacEmailAPI.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_KEY!)
+        console.log("HERE === ", transacEmailAPI.sendTransacEmail(sendSmtpEmail))
+        return transacEmailAPI.sendTransacEmail(sendSmtpEmail).then((response) => {
+            console.log("Email sent successfully, data: ", response)
+            return Response.json(response)
+        },
+            (error) => {
+                console.log("Sending email failed, error: ", error)
+            })
     } catch (error) {
         console.log("Mail error = ", error)
         return NextResponse.error()
     }
 }
+
+
+/*
+Documentation for Brevo - https://www.npmjs.com/package/@getbrevo/brevo
+*/
