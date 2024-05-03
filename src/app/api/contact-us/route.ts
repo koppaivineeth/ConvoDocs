@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import { AccountApi, AccountApiApiKeys, SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo"
 import { EmailTemplate } from '@/lib/Email-template';
 
-export async function getBrevoDetails() {
+export const getBrevoDetails = () => {
     let apiInstance = new AccountApi()
     apiInstance.setApiKey(AccountApiApiKeys.apiKey, process.env.BREVO_KEY!)
 
