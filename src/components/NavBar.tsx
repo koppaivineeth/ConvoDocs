@@ -9,7 +9,8 @@ import {
 import { ArrowRight } from 'lucide-react'
 import UserAccountNav from './UserAccountNav'
 import MobileNav from './MobileNav'
-import ToolsNav from './ToolsNav'
+import Image from "next/image"
+import Logo from "../../public/logo.png"
 
 const Navbar = async () => {
     const { getUser } = getKindeServerSession()
@@ -17,13 +18,16 @@ const Navbar = async () => {
     const user = await getUser()
 
     return (
-        <nav className='sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all'>
+        <nav className='sticky h-auto inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all pt-5 pb-2'>
             <MaxWidthWrapper>
-                <div className='flex h-14 items-center justify-between border-b border-zinc-200'>
+                <div className='flex h-14 items-center justify-between'>
                     <Link
                         href='/'
                         className='flex z-40 font-semibold'>
-                        <span>ConvoDocs</span>
+                        <span>
+                            <Image src={Logo} alt="Site Logo" className='w-14 h-14 inline mr-2' />
+                            ConvoDocs
+                        </span>
                     </Link>
 
                     <MobileNav isAuth={!!user} />

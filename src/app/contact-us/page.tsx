@@ -67,10 +67,11 @@ const Page = () => {
     }
     return (
         <>
-            <div className="text-center">
-                <span>Contact Us </span>
+            <div className="text-center mt-10">
+                <h1 className="mb-7 text-lg font-bold">Contact Us </h1>
+                <span className="text-sm">Have a question in mind? You may post it here</span>
             </div>
-            <div className="contact-form mt-4 w-fit h-fit m-auto p-5 max-w-2xl select-none bg-zinc-200 rounded-md">
+            <div className="contact-form mt-4 w-fit h-fit m-auto p-5 max-w-2xl select-none bg-zinc-200 rounded-md mb-10">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} method="POST">
                         <div className="grid grid-cols-2 gap-5 mb-10">

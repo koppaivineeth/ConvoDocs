@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import Image from 'next/image'
+import Footer from "@/components/Footer"
 
 export default function Home() {
   return (
@@ -20,7 +21,7 @@ export default function Home() {
         </h1>
         <p className='mt-5 max-w-prose text-zinc-700 sm:text-lg'>
           ConvoDocs allows you to have conversations with any
-          PDF document. Simply upload your file and start
+          PDF or Text document. Simply upload your file and start
           asking questions right away.
         </p>
 
@@ -82,7 +83,7 @@ export default function Home() {
       </div>
 
       {/* Feature section */}
-      <div className='mx-auto mb-32 mt-32 max-w-5xl sm:mt-56'>
+      <div className='mx-auto mb-32 mt-32 max-w-5xl sm:mt-56 w-4/5'>
         <div className='mb-12 px-6 lg:px-8'>
           <div className='mx-auto max-w-2xl sm:text-center'>
             <h2 className='mt-2 font-bold text-4xl text-gray-900 sm:text-5xl'>
@@ -165,21 +166,7 @@ export default function Home() {
       </div>
 
       {/* Footer section */}
-      <div className='home-footer border-t border-slate-200 p-5 grid grid-cols-4'>
-        <div className='flex justify-center pl-16'>
-          <ul>
-            <h1 className='font-bold mb-5'>Resources</h1>
-            <li><Link href="/contact-us" className='leading-10'>Contact Us</Link></li>
-            <li><Link href="" className='leading-10'>Terms of Service</Link></li>
-            <li><Link href="" className='leading-10'>Privacy Policy</Link></li>
-          </ul>
-        </div>
-        <div></div>
-        <div className='resources'>
-
-        </div>
-        <div className=''></div>
-      </div>
+      <Footer />
     </>
   )
 }

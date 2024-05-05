@@ -106,3 +106,7 @@
 div.collapsible-sidebar::-webkit-scrollbar {
   width: 17px;
 }
+
+li {
+  line-height: 2rem;
+}

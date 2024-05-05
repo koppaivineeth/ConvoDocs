@@ -41,7 +41,6 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
     const [selectedFiles, setSelectedFiles] = useState<any>([]);
     const utils = trpc.useUtils()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
-    // let selectedFiles: any[] = []
 
     const { mutate: deleteFile } = trpc.deleteFile.useMutation({
         onSuccess: () => {
