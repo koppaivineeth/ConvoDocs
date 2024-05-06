@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import Image from 'next/image'
 import Footer from "@/components/Footer"
+import globals from '@/lib/utils'
 
 export default function Home() {
   return (
@@ -30,7 +31,7 @@ export default function Home() {
             size: 'lg',
             className: 'mt-5',
           })}
-          href='/dashboard'>
+          href={globals.productLaunched ? '/dashboard' : '/product-launch'}>
           Get started{' '}
           <ArrowRight className='ml-2 h-5 w-5' />
         </Link>

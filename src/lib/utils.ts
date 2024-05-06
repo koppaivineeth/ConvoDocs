@@ -53,6 +53,7 @@ export function constructMetadata({
 }
 
 let globals = {
-  isDeleteConfirmed: false
+  isMaintanenceMode: false,
+  productLaunched: false
 }
 export default globals

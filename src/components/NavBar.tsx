@@ -11,6 +11,7 @@ import UserAccountNav from './UserAccountNav'
 import MobileNav from './MobileNav'
 import Image from "next/image"
 import Logo from "../../public/logo.png"
+import globals from "@/lib/utils"
 
 const Navbar = async () => {
     const { getUser } = getKindeServerSession()
@@ -29,57 +30,63 @@ const Navbar = async () => {
                             ConvoDocs
                         </span>
                     </Link>
-
-                    <MobileNav isAuth={!!user} />
-
-                    <div className='hidden items-center space-x-4 sm:flex'>
-                        {!user ? (
+                    {
+                        globals.productLaunched ? (
                             <>
-                                <Link
-                                    href='/pricing'
-                                    className={buttonVariants({
-                                        variant: 'ghost',
-                                        size: 'sm',
-                                    })}>
-                                    Pricing
-                                </Link>
-                                <LoginLink
-                                    className={buttonVariants({
-                                        variant: 'ghost',
-                                        size: 'sm',
-                                    })}>
-                                    Sign in
-                                </LoginLink>
-                                <RegisterLink
-                                    className={buttonVariants({
-                                        size: 'sm',
-                                    })}>
-                                    Get started{' '}
-                                    <ArrowRight className='ml-1.5 h-5 w-5' />
-                                </RegisterLink>
+                                <MobileNav isAuth={!!user} />
+
+                                <div className='hidden items-center space-x-4 sm:flex'>
+                                    {!user ? (
+                                        <>
+                                            <Link
+                                                href='/pricing'
+                                                className={buttonVariants({
+                                                    variant: 'ghost',
+                                                    size: 'sm',
+                                                })}>
+                                                Pricing
+                                            </Link>
+                                            <LoginLink
+                                                className={buttonVariants({
+                                                    variant: 'ghost',
+                                                    size: 'sm',
+                                                })}>
+                                                Sign in
+                                            </LoginLink>
+                                            <RegisterLink
+                                                className={buttonVariants({
+                                                    size: 'sm',
+                                                })}>
+                                                Get started{' '}
+                                                <ArrowRight className='ml-1.5 h-5 w-5' />
+                                            </RegisterLink>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link
+                                                href='/dashboard'
+                                                className={buttonVariants({
+                                                    variant: 'ghost',
+                                                    size: 'sm',
+                                                })}>
+                                                Dashboard
+                                            </Link>
+                                            <UserAccountNav
+                                                name={
+                                                    !user.given_name || !user.family_name
+                                                        ? 'Your Account'
+                                                        : `${user.given_name} ${user.family_name}`
+                                                }
+                                                email={user.email ?? ''}
+                                                imageUrl=''
+                                            />
+                                        </>
+                                    )}
+                                </div>
                             </>
-                        ) : (
-                            <>
-                                <Link
-                                    href='/dashboard'
-                                    className={buttonVariants({
-                                        variant: 'ghost',
-                                        size: 'sm',
-                                    })}>
-                                    Dashboard
-                                </Link>
-                                <UserAccountNav
-                                    name={
-                                        !user.given_name || !user.family_name
-                                            ? 'Your Account'
-                                            : `${user.given_name} ${user.family_name}`
-                                    }
-                                    email={user.email ?? ''}
-                                    imageUrl=''
-                                />
-                            </>
-                        )}
-                    </div>
+                        ) : null
+                    }
+
                 </div>
             </MaxWidthWrapper>
         </nav>
