@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { AccountApi, AccountApiApiKeys, SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo"
-import { EmailTemplate } from '@/lib/Email-template';
+import { EmailSubscriptionTemplate } from '@/lib/Email-template';
 
 export const POST = async (req: NextRequest) => {
     try {
@@ -10,7 +10,7 @@ export const POST = async (req: NextRequest) => {
         let sendSmtpEmail = new SendSmtpEmail()
 
         sendSmtpEmail.subject = "Subscribe to email list"
-        sendSmtpEmail.htmlContent = EmailTemplate(body.firstName, body.lastName, body.email, body.message)
+        sendSmtpEmail.htmlContent = EmailSubscriptionTemplate(body.email, body.message)
         sendSmtpEmail.sender = { "name": "Convo Docs", "email": "convodocs7@gmail.com" }
         sendSmtpEmail.to = [{ "name": "Convo Docs", "email": "convodocs7@gmail.com" }]
         sendSmtpEmail.headers = { "Authentication": process.env.BREVO_KEY! }

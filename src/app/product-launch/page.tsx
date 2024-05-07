@@ -15,11 +15,13 @@ import {
     FormLabel,
     FormMessage
 } from "@/components/ui/form"
+import { Textarea } from "@/components/ui/textarea"
 
 const formSchema = z.object({
     email: z.string().min(1, {
         message: "Email is required"
-    })
+    }),
+    message: z.string().optional()
 })
 const Page = () => {
     const [isSending, setIsSending] = useState(false)
@@ -27,7 +29,8 @@ const Page = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: ""
+            email: "",
+            message: ""
         },
     })
     const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -51,7 +54,7 @@ const Page = () => {
     }
 
     return (
-        <div className="m-auto w-1/2 absolute top-20 left-0 right-0 bottom-0 h-fit p-10 pt-0 border bg-white select-none">
+        <div className="m-auto w-1/2 h-fit p-10 pt-0 border bg-white select-none mt-16 mb-16">
             <span className="bg-green-300 p-1 font-semibold text-sm rounded-b-sm">
                 <Rocket className="w-4 h-4 inline mr-3" />
                 Launching soon
@@ -73,12 +76,30 @@ const Page = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <Input {...field} type="email" placeholder="Email address" className="mb-5 mt-5 ml-auto mr-auto w-4/5" />
+                                            <Input {...field} type="email" placeholder="Email address" className="mb-2 mt-5 ml-auto mr-auto w-4/5" />
+                                        </FormControl>
+                                        <div className="error-message h-4 w-4/5 text-left ml-auto mr-auto">
+                                            <FormMessage className="text-red-600 text-[10px] italic w-4/5" />
+                                        </div>
+                                    </FormItem>
+
+                                )}
+                            />
+                        </div>
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="message"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Textarea minRows={4} {...field} placeholder="Any message you want to share? (Optional)" className="mb-5 mt-5 ml-auto mr-auto w-4/5" />
                                         </FormControl>
                                         <div className="error-message h-4">
                                             <FormMessage className="text-red-600 text-[10px] italic" />
                                         </div>
                                     </FormItem>
+
                                 )}
                             />
                         </div>

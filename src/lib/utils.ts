@@ -54,6 +54,6 @@ export function constructMetadata({
 
 let globals = {
   isMaintanenceMode: false,
-  productLaunched: false
+  productLaunched: true
 }
 export default globals
