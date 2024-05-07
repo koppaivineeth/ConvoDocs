@@ -2,7 +2,7 @@
 
 import { trpc } from "@/app/_trpc/client"
 import UploadButton from "./UploadButton"
-import { Ghost, Loader2, MessageSquare, Plus, Trash, CircleCheck, Circle, CircleMinus } from "lucide-react"
+import { Ghost, Loader2, MessageSquare, Plus, Trash, CircleCheck, Circle, CircleMinus, Download } from "lucide-react"
 import Link from 'next/link'
 import Skeleteon from 'react-loading-skeleton'
 import { format } from 'date-fns'
@@ -11,23 +11,15 @@ import { getUserSubscriptionPlan } from "@/lib/stripe"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, TooltipPortal, TooltipArrow } from "./ui/tooltip"
+import PDFDocument from "@/lib/createPDFFile"
 
 interface PageProps {
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
     fileType: string
     uploadFileType: string
 }
-interface selectedFileObject {
-    fileId: string
-    fileName: string
-    uploadStatus: string
-    url: string
-    key?: string
-    fileType?: string
-    isSelected?: boolean
-    messages?: []
-}
+
 const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) => {
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
         null
@@ -39,8 +31,24 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
     const [isFilesEmpty, setIsFilesEmpty] = useState<boolean>(false)
     const [isAnyFileSelected, setIsAnyFileSelected] = useState<boolean>(false)
     const [selectedFiles, setSelectedFiles] = useState<any>([]);
+    const [isDownloading, setIsDownloading] = useState<any>([]);
+    const [allFileMessage, setAllFileMessage] = useState<any>([]);
+    const [isMessagesLoading, setIsMessagesLoading] = useState<boolean>(false);
     const utils = trpc.useUtils()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
+    const { mutate: getAllFileMessages } = trpc.getAllFileMessages.useMutation({
+        onSuccess: ({ messages }) => {
+            setIsMessagesLoading(false)
+            setIsDownloading(true)
+            setAllFileMessage(messages)
+        },
+        onMutate() {
+            setIsMessagesLoading(true)
+        },
+        onSettled() {
+            setIsMessagesLoading(false)
+        }
+    })
 
     const { mutate: deleteFile } = trpc.deleteFile.useMutation({
         onSuccess: () => {
@@ -92,6 +100,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
             deleteFiles({ ids: fileIds })
         }
     }
+
     useEffect(() => {
         const isEmpty = files === null || files?.files.length === 0
         setIsFilesEmpty(isEmpty)
@@ -228,7 +237,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                 </div>
                                             </div>
                                         </Link>
-                                        <div className="px-6 mt-4 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500">
+                                        <div className="px-6 mt-4 grid grid-cols-4 place-items-center py-2 gap-6 text-xs text-zinc-500">
                                             <div className="flex items-center gap-2">
                                                 <Plus className="h-4 w-4" />
                                                 {format(new Date(file.createdAt!), "MMM yyyy")}
@@ -238,7 +247,30 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                 <MessageSquare className="h-4 w-4" />
                                                 <span>{file.messages.length}</span>
                                             </div>
+                                            <div className="flex items-center gap-2">
+                                                {/* Download message in PDF */}
+                                                <TooltipProvider>
+                                                    <Tooltip delayDuration={300}>
+                                                        <TooltipTrigger className="cursor-default ml-1.5">
+                                                            {isMessagesLoading ? (
+                                                                <Loader2 className="h4 w-4 animate-spin" />
 
+                                                            ) : (
+                                                                <Download className="h-4 w-4 cursor-pointer" onClick={
+                                                                    () => {
+                                                                        getAllFileMessages({ fileId: file.fileId })
+                                                                    }} />
+                                                            )}
+                                                        </TooltipTrigger>
+                                                        <TooltipPortal>
+                                                            <TooltipContent className="w-80 p-2 bg-black text-white text-xs">
+                                                                {isMessagesLoading ? (<span>Creating PDF</span>) : (<span>Download the chats in PDF format</span>)}
+                                                                <TooltipArrow />
+                                                            </TooltipContent>
+                                                        </TooltipPortal>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </div>
                                             <Button
                                                 onClick={() => {
                                                     deleteFile({ id: file.fileId })
@@ -264,6 +296,11 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                     </div>
                 )}
             </main >
+            <div>
+                {
+                    isDownloading && <PDFDocument messages={allFileMessage} />
+                }
+            </div>
         </>
     )
 }

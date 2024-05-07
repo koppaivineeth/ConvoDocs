@@ -36,6 +36,43 @@ export const appRouter = router({
         return { success: true }
     }),
 
+    getAllFileMessages: privateProcedure
+        .input(
+            z.object({
+                fileId: z.string()
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const { userId } = ctx
+            const { fileId } = input
+            console.log("getFileMsgs", fileId)
+            const file = await db.user_files.findFirst({
+                where: {
+                    fileId: fileId,
+                    userId
+                }
+            })
+
+            if (!file) throw new TRPCError({ code: "NOT_FOUND" })
+
+            const messages = await db.message.findMany({
+                where: {
+                    fileId
+                },
+                orderBy: {
+                    createdAt: "desc"
+                },
+                select: {
+                    id: true,
+                    isUserMessage: true,
+                    createdAt: true,
+                    text: true
+                }
+            })
+
+            return { messages: messages }
+        }),
+
     getFileMessages: privateProcedure
         .input(z.object({
             limit: z.number().min(1).max(100).nullish(),
