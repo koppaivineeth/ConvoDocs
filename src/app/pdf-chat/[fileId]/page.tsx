@@ -27,6 +27,9 @@ const Page = async ({ params }: PageProps) => {
     const files = await db.user_files.findMany({
         where: {
             userId: user?.id
+        },
+        include: {
+            messages: true
         }
     })
 
@@ -35,6 +38,9 @@ const Page = async ({ params }: PageProps) => {
     const file = await db.user_files.findFirst({
         where: {
             fileId: fileId
+        },
+        include: {
+            messages: true
         }
     })
 
@@ -86,7 +92,7 @@ const Page = async ({ params }: PageProps) => {
 
                         {/* right side - chat window */}
                         <div className="shrink-0 flex-[0.75] border-t border-gray-200 lg:w-96 lg:border-1 lg:border-t-0">
-                            <ChatWrapper fileId={file.fileId} />
+                            <ChatWrapper fileId={file.fileId} file={file} subscriptionPlan={subscriptionPlan} />
                         </div>
                     </div>
                 </div>

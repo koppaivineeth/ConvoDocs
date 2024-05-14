@@ -301,7 +301,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                                                 {!isDownloading ? (
                                                                                     <Button disabled>Download now</Button>
                                                                                 ) : (
-                                                                                    <PDFDownloadLink document={<PDFDocument file={file} />} fileName={dummyFile.fileName}>
+                                                                                    <PDFDownloadLink document={<PDFDocument file={file} />}>
                                                                                         <Button>Download now</Button>
                                                                                     </PDFDownloadLink>
                                                                                 )}
@@ -511,7 +511,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                                                 {!isDownloading ? (
                                                                                     <Button disabled>Download now</Button>
                                                                                 ) : (
-                                                                                    <PDFDownloadLink document={<PDFDocument file={file} />} fileName={dummyFile.fileName}>
+                                                                                    <PDFDownloadLink document={<PDFDocument file={file} />}>
                                                                                         <Button>Download now</Button>
                                                                                     </PDFDownloadLink>
                                                                                 )}

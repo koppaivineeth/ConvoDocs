@@ -10,14 +10,22 @@ interface PageProps {
     file: {
         fileId: string,
         fileName: string,
-        messages: []
+        messages: {
+            id: string;
+            text: string;
+            isUserMessage: boolean;
+            createdAt: Date;
+            updatedAt: string | null;
+            userId: string | null;
+            fileId: string | null;
+        }[]
     }
 }
 interface Message {
     id: string
     text: string
     isUserMessage: boolean
-    createdAt: string
+    createdAt: Date
 }
 
 
