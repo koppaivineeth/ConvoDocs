@@ -59,9 +59,11 @@ const UploadDropzone = ({
         <Dropzone
             multiple={false}
             onDrop={async (acceptedFile) => {
+                console.log("Upload file type = ", fileType)
                 setUploadError(false)
                 let displayType = fileType.includes("pdf") ? "PDF" : fileType.includes("text") ? "text" : fileType
                 if (!acceptedFile[0]?.type.includes(fileType) && fileType !== "all") {
+                    debugger
                     setUploadError(true)
                     return toast({
                         title: "Something went wrong !",

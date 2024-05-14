@@ -166,6 +166,48 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Other features */}
+        <div className='mx-auto max-w-6xl'>
+          <h2 className='font-bold text-3xl text-gray-900 sm:text-3xl mt-32 mb-10'>
+            Other features
+          </h2>
+          <div className='grid grid-cols-3'>
+            <div className='flex flex-col'>
+              <span className='text-xl font-semibold'>View Chat history</span>
+              <span className='mt-2 text-zinc-700'>
+                The previous messages are retained, you can view those
+              </span>
+              <Image
+                src="/dashboard-preview.jpg"
+                alt="Download file window"
+                width={300}
+                height={150}
+                className='mt-10 h-[150px]'
+              />
+            </div>
+            <div className='flex flex-col'>
+              <span className='text-xl font-semibold'>Download Chat history</span>
+              <span className='mt-2 text-zinc-700'>
+                You can download the chat history in PDF format
+              </span>
+
+              <Image
+                src="/downloadFile.png"
+                alt="Download file window"
+                width={300}
+                height={100}
+                className='mt-10'
+              />
+            </div>
+            <div className='flex flex-col'>
+              <span className='text-xl font-semibold'>Take notes</span>
+              <span className='mt-2 text-zinc-700'>
+                It allows you to save your own notes
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer section */}

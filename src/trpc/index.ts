@@ -39,12 +39,16 @@ export const appRouter = router({
     getAllFileMessages: privateProcedure
         .input(
             z.object({
-                fileId: z.string()
+                file: z.object({
+                    fileId: z.string(),
+                    fileName: z.string(),
+                    createdAt: z.string()
+                })
             })
         )
         .mutation(async ({ ctx, input }) => {
             const { userId } = ctx
-            const { fileId } = input
+            const { fileId } = input.file
             console.log("getFileMsgs", fileId)
             const file = await db.user_files.findFirst({
                 where: {

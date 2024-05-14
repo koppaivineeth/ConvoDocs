@@ -3,10 +3,11 @@
 import Messages from "./Messages"
 import ChatInput from "./ChatInput"
 import { trpc } from "@/app/_trpc/client"
-import { ChevronLeft, Loader2, XCircle } from "lucide-react"
+import { ChevronLeft, Download, Loader2, XCircle } from "lucide-react"
 import Link from "next/link"
 import { buttonVariants } from "../ui/button"
 import { ChatContextProvider } from "./ChatContext"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, TooltipPortal, TooltipArrow } from "../ui/tooltip"
 
 interface ChatWrapperProps {
     fileId: string
@@ -75,7 +76,22 @@ const ChatWrapper = ({ fileId }: ChatWrapperProps) => {
     return (
         <ChatContextProvider fileId={fileId}>
             <div className="chat-context-wrapper relative max-h-[calc(100vh-3rem)] bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
-                <div className="flex-1 justify-between flex flex-col mb-28">
+                <div className="flex justify-end p-4">
+                    <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                            <TooltipTrigger className="cursor-default ml-1.5">
+                                <Download className="h-5 w-5 cursor-pointer" />
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                                <TooltipContent className="w-80 p-2 bg-black text-white text-xs">
+                                    Download the chats in PDF format
+                                    <TooltipArrow />
+                                </TooltipContent>
+                            </TooltipPortal>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
+                <div className="flex-1 justify-between flex flex-col mb-28 min-h-[calc(100vh-13rem)]">
                     <Messages fileId={fileId} />
                 </div>
 

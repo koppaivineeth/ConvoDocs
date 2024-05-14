@@ -39,6 +39,12 @@ const Page = async () => {
                     negative: true,
                 },
                 {
+                    text: 'Download chat messages',
+                    footnote:
+                        'You can download the chat history by date range',
+                    negative: true
+                },
+                {
                     text: 'Priority support',
                     negative: true,
                 },
@@ -66,6 +72,11 @@ const Page = async () => {
                     text: 'Higher-quality responses',
                     footnote:
                         'Better algorithmic responses for enhanced content quality',
+                },
+                {
+                    text: 'Download chat messages',
+                    footnote:
+                        'You can download the chat history by date range',
                 },
                 {
                     text: 'Priority support',
