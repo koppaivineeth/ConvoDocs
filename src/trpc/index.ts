@@ -42,7 +42,7 @@ export const appRouter = router({
                 file: z.object({
                     fileId: z.string(),
                     fileName: z.string(),
-                    createdAt: z.date()
+                    createdAt: z.string()
                 })
             })
         )

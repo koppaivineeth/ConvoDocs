@@ -50,7 +50,8 @@ const onUploadComplete = async ({
             userId: metadata.user,
             url: file.url,
             uploadStatus: 'PROCESSING',
-            fileType: file.type
+            fileType: file.type,
+            createdAt: new Date().toISOString()
         },
     })
 

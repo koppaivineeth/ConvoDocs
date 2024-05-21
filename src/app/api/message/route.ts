@@ -35,7 +35,8 @@ export const POST = async (req: NextRequest) => {
             text: message,
             isUserMessage: true,
             userId,
-            fileId
+            fileId,
+            createdAt: new Date().toISOString()
         }
     })
 
@@ -106,7 +107,8 @@ export const POST = async (req: NextRequest) => {
                     text: completion,
                     isUserMessage: false,
                     fileId,
-                    userId
+                    userId,
+                    createdAt: new Date().toISOString()
                 }
             })
         }

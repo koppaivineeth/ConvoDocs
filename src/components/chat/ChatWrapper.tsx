@@ -18,17 +18,19 @@ import { getUserSubscriptionPlan } from "@/lib/stripe"
 interface ChatWrapperProps {
     fileId: string
     file: {
+        userId: string,
         fileId: string,
         fileName: string,
-        createdAt: Date,
+        createdAt: string,
+        key: string | null,
         messages: {
-            id: string;
-            text: string;
-            isUserMessage: boolean;
-            createdAt: Date;
-            updatedAt: string | null;
-            userId: string | null;
-            fileId: string | null;
+            userId: string | null,
+            id: string,
+            fileId: string | null,
+            createdAt: string,
+            text: string,
+            isUserMessage: boolean,
+            updatedAt: string | null,
         }[]
     }
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
