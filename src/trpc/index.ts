@@ -239,16 +239,13 @@ export const appRouter = router({
         const { userId } = ctx
 
         const billingUrl = absoluteUrl("/billing")
-        console.log("CREATE STRIPE SESSION ========")
         if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" })
-        console.log("CREATE STRIPE SESSION USER ======== ", userId)
 
         const dbUser = await db.users.findFirst({
             where: {
                 userId: userId
             }
         })
-        console.log("CREATE STRIPE SESSION DBUSER ======== ", dbUser)
 
         if (!dbUser) throw new TRPCError({ code: "UNAUTHORIZED" })
 
@@ -283,7 +280,72 @@ export const appRouter = router({
         console.log("return stripeSession = ", stripeSession)
         return { url: stripeSession.url }
 
-    })
+    }),
+
+    saveNotesFromPDF: privateProcedure
+        .input(z.object({
+            notes: z.string(),
+            fileId: z.string()
+        }))
+        .mutation(async ({ input }) => {
+
+            let note = await db.savedNotes.findFirst({
+                where: {
+                    fileId: input.fileId
+                }
+            })
+            if (note) {
+                await db.savedNotes.deleteMany({
+                    where: {
+                        id: note.id
+                    }
+                })
+            }
+
+            await db.savedNotes.create({
+                data: {
+                    notes: input.notes,
+                    updatedAt: new Date().toISOString(),
+                    fileId: input.fileId
+                }
+            })
+        }),
+
+    retrieveSavedNotes: privateProcedure
+        .input(z.object({
+            fileId: z.string()
+        }))
+        .query(async ({ input }) => {
+            const savedNotes = await db.savedNotes.findFirst({
+                where: {
+                    fileId: input.fileId
+                }
+            })
+            console.log("NOTES =  ", savedNotes)
+            return savedNotes
+        }),
+
+    deleteAllNotes: privateProcedure.input(z.object({
+        fileId: z.string()
+    }))
+        .mutation(async ({ input }) => {
+
+            let note = await db.savedNotes.findFirst({
+                where: {
+                    fileId: input.fileId
+                }
+            })
+            if (note) {
+                await db.savedNotes.delete({
+                    where: {
+                        id: note.id
+                    }
+                })
+            }
+
+            return { message: "all deleted" }
+        })
+
 });
 
 export type AppRouter = typeof appRouter;

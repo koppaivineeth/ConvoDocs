@@ -5,6 +5,7 @@ import { db } from "@/db"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
 import { Suspense } from "react"
 import PageLoader from "@/components/PageLoader"
+import AfterServerComponentRender from "@/components/AfterServerComponentRender"
 
 const Page = async () => {
 
@@ -25,6 +26,7 @@ const Page = async () => {
     return (
         <>
             <Suspense fallback={<PageLoader />}>
+                <AfterServerComponentRender hideBodyScroll={false} />
                 <Dashboard subscriptionPlan={subscriptionPlan} fileType="all" uploadFileType="application/pdf" />
             </Suspense>
         </>

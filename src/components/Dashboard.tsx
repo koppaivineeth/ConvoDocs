@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, TooltipPortal
 import PDFDocument from "@/lib/createPDFFile"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
+import PageLoader from "./PageLoader"
 
 interface PageProps {
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
@@ -36,22 +37,19 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
     const [isAnyFileSelected, setIsAnyFileSelected] = useState<boolean>(false)
     const [selectedFiles, setSelectedFiles] = useState<any>([])
     const [isDownloading, setIsDownloading] = useState<any>([])
-    const [isMessagesLoading, setIsMessagesLoading] = useState<boolean>(false)
     const [isDownloadWindowOpen, setIsDownloadWindowOpen] = useState<boolean>(false)
+    const [showLoadingIcon, setShowLoadingIcon] = useState<boolean>(false)
 
     const utils = trpc.useUtils()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
     const { mutate: getAllFileMessages } = trpc.getAllFileMessages.useMutation({
-        onSuccess: ({ messages }) => {
-            setIsMessagesLoading(false)
+        onSuccess: () => {
             setIsDownloading(true)
         },
-        onMutate({ file }) {
+        onMutate() {
             setIsDownloadWindowOpen(true)
-            setIsMessagesLoading(true)
         },
         onSettled() {
-            setIsMessagesLoading(false)
         }
     })
 
@@ -105,6 +103,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
             deleteFiles({ ids: fileIds })
         }
     }
+
     const dummyMessages = [{
         id: "1",
         text: "Question 1",
@@ -220,7 +219,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                             {files && files.files && files.files?.length !== 0 ? (
                                 <ul className="mt-8 grid grid-cols-1 gap-6 divide-y divide-zinc-200 md:grid-cols-2 lg:grid-cols-3 pl-3">
                                     {
-                                        files?.files.filter((file) => file.fileType === 'pdf').sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+                                        files?.files.filter((file) => file.fileType === 'pdf').length > 0 ? (files?.files.filter((file) => file.fileType === 'pdf').sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
                                             .map((file) => (
                                                 <li key={file.fileId} className={cn("relative col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg", {
                                                     "bg-blue-100": checkIsFileSelected(file)
@@ -259,6 +258,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                             file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
                                                     }
                                                         className="flex flex-col gap-2"
+                                                        onClick={() => setShowLoadingIcon(true)}
                                                     >
                                                         <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                                                             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
@@ -336,7 +336,9 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                         </Button>
                                                     </div>
                                                 </li>
-                                            ))
+                                            ))) : (
+                                            <h2 className="italic">No files found</h2>
+                                        )
                                     }
                                 </ul>
                             ) : isLoading ? (
@@ -430,7 +432,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                             {files && files.files && files.files?.length !== 0 ? (
                                 <ul className="mt-8 grid grid-cols-1 gap-6 divide-y divide-zinc-200 md:grid-cols-2 lg:grid-cols-3 pl-3">
                                     {
-                                        files?.files.filter((file) => file.fileType === "text").sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+                                        files?.files.filter((file) => file.fileType === "text").length > 0 ? (files?.files.filter((file) => file.fileType === "text").sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
                                             .map((file) => (
                                                 <li key={file.fileId} className={cn("relative col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg", {
                                                     "bg-blue-100": checkIsFileSelected(file)
@@ -469,6 +471,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                             file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
                                                     }
                                                         className="flex flex-col gap-2"
+                                                        onClick={() => setShowLoadingIcon(true)}
                                                     >
                                                         <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                                                             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
@@ -546,7 +549,9 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                                                         </Button>
                                                     </div>
                                                 </li>
-                                            ))
+                                            ))) : (
+                                            <h2 className="italic">No files found</h2>
+                                        )
                                     }
                                 </ul>
                             ) : isLoading ? (
@@ -564,6 +569,14 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
 
 
             </main>
+            {
+                showLoadingIcon ? (
+                    <div className="page-loader absolute w-80 h-60 top-0 left-0 right-0 bottom-0 m-auto">
+                        <div className="loader-bg absolute w-full h-full top-0 left-0 right-0 bottom-0 bg-black opacity-50 z-50 rounded-md" />
+                        <PageLoader className="absolute top-0 bottom-0 left-0 right-0" />
+                    </div>
+                ) : null
+            }
         </>
     )
 }

@@ -9,6 +9,7 @@ import { ArrowRight, Check, HelpCircle, Minus } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import PageLoader from "@/components/PageLoader"
+import AfterServerComponentRender from "@/components/AfterServerComponentRender"
 
 const Page = async () => {
     const { getUser } = getKindeServerSession()
@@ -87,6 +88,7 @@ const Page = async () => {
 
     return (
         <>
+            <AfterServerComponentRender hideBodyScroll={false} />
             <Suspense fallback={<PageLoader />}>
                 <MaxWidthWrapper className="mb-8 mt-24 text-center max-w-5xl">
                     <div className="mx-auto mb-10 sm:max-w-lg">

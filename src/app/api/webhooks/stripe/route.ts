@@ -5,10 +5,10 @@ import type Stripe from 'stripe'
 
 export async function POST(request: Request) {
     const body = await request.text()
-    const signature = headers().get('Stripe-Signature') ?? ''
+    const signature = headers().get('stripe-signature') ?? ''
 
     let event: Stripe.Event
-
+    console.log("STRIPE_SUBSCRIPTION_HOOK")
     try {
         event = stripe.webhooks.constructEvent(
             body,
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     const session = event.data
         .object as Stripe.Checkout.Session
-
+    console.log("STRIPE_SESSION = ", session)
     if (!session?.metadata?.userId) {
         return new Response(null, {
             status: 200,

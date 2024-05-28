@@ -19,11 +19,11 @@ const SideBar = ({ children }: PageProps) => {
             })}
                 onClick={() => setIsSideBarOpen((prev) => !prev)}>
                 <span>
-                    <Image className="w-6 h-20 rounded-tr-sm rounded-br-sm hover:h-24 transition-all" src={chooseFile} alt="choose file" />
+                    <Image className="w-6 h-20 rounded-tr-sm rounded-br-sm" src={chooseFile} alt="choose file" />
                 </span>
             </div>
             <div className={cn(
-                `hidden select-none collapsible-sidebar h-[calc(100vh-3.5rem)] max-h-full w-60 absolute bg-blue-600 border-r-4 border-l-0 border-z z-10 p-5 text-blue-50`, {
+                `hidden select-none collapsible-sidebar h-[calc(100vh-3.5rem)] max-h-full w-60 absolute bg-blue-600 border-r-4 border-l-0 border-z z-10 p-5 text-blue-50 top-[15%]`, {
                 "block": isSideBarOpen
             })}>
                 <div className="close-button flex justify-end static">

@@ -9,6 +9,10 @@ import SideBar from "@/components/Sidebar"
 import Link from "next/link"
 import UploadButton from "@/components/UploadButton"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import AfterServerComponentRender from "@/components/AfterServerComponentRender"
+import { Textarea } from "@/components/ui/textarea"
+import NotesInput from "@/components/notes/NotesInput"
 
 interface PageProps {
     params: {
@@ -50,6 +54,7 @@ const Page = async ({ params }: PageProps) => {
 
     return (
         <>
+            <AfterServerComponentRender hideBodyScroll={true} />
             <Suspense fallback={<PageLoader />}>
                 <SideBar>
                     <div className="flex justify-center">
@@ -81,8 +86,8 @@ const Page = async ({ params }: PageProps) => {
                         </div>
                     </div>
                 </SideBar>
-                <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.5rem)] overflow-hidden pb-10">
-                    <div className="mx-auto w-full max-w-8xl grow lg:flex xl:px-2">
+                <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.5rem)] pb-10">
+                    <div className="mx-auto w-full max-w-8xl lg:flex xl:px-2">
                         {/* left side - pdf view */}
                         <div className="flex-1 xl:flex">
                             <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
@@ -92,7 +97,18 @@ const Page = async ({ params }: PageProps) => {
 
                         {/* right side - chat window */}
                         <div className="shrink-0 flex-[0.75] border-t border-gray-200 lg:w-96 lg:border-1 lg:border-t-0">
-                            <ChatWrapper fileId={file.fileId} file={file} subscriptionPlan={subscriptionPlan} />
+                            <Tabs defaultValue="chat" className="pt-6">
+                                <TabsList className="w-full flex justify-around h-14">
+                                    <TabsTrigger value="chat" className="w-full h-10">Chat</TabsTrigger>
+                                    <TabsTrigger value="notes" className="w-full h-10">Notes</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="chat">
+                                    <ChatWrapper fileId={file.fileId} file={file} subscriptionPlan={subscriptionPlan} />
+                                </TabsContent>
+                                <TabsContent value="notes" className="overflow-scroll">
+                                    <NotesInput fileId={file.fileId} />
+                                </TabsContent>
+                            </Tabs>
                         </div>
                     </div>
                 </div>

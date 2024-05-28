@@ -55,7 +55,6 @@ const ChatWrapper = ({ fileId, file, subscriptionPlan }: ChatWrapperProps) => {
         onSettled() {
         }
     })
-    console.log("FILE  ====   ", file, !file.messages)
     if (isLoading)
         return (
             <div className="relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
@@ -111,8 +110,8 @@ const ChatWrapper = ({ fileId, file, subscriptionPlan }: ChatWrapperProps) => {
 
     return (
         <ChatContextProvider fileId={fileId}>
-            <div className="chat-context-wrapper relative max-h-[calc(100vh-3rem)] bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
-                <div className="flex justify-end p-4">
+            <div className="chat-context-wrapper relative max-h-[calc(100vh-3rem)] h-[calc(100vh-9rem)] bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
+                {/* <div className="flex justify-end p-4">
                     <Dialog open={isDownloadWindowOpen} onOpenChange={(visible) => {
                         if (!visible) {
                             setIsDownloadWindowOpen(false)
@@ -167,8 +166,8 @@ const ChatWrapper = ({ fileId, file, subscriptionPlan }: ChatWrapperProps) => {
 
                         </DialogContent>
                     </Dialog>
-                </div>
-                <div className="flex-1 justify-between flex flex-col mb-28 min-h-[calc(100vh-13rem)]">
+                </div> */}
+                <div className="flex-1 justify-between flex flex-col mb-28 max-h-[calc(100vh-8rem)] h-[calc(100vh-16rem)]">
                     <Messages fileId={fileId} />
                 </div>
 
