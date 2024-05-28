@@ -59,3 +59,10 @@ model message {
   File          user_files? @relation(fields: [fileId], references: [fileId])
   fileId        String?
 }
+
+model savedNotes {
+  id          String    @id @default(cuid())
+  notes       String    @db.VarChar(1000)
+  updatedAt   String?   @db.VarChar(50)
+  fileId      String    
+}
