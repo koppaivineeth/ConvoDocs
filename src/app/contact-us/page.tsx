@@ -17,6 +17,7 @@ import { useState } from "react"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/textarea"
+import Footer from "@/components/Footer"
 
 const formSchema = z.object({
     firstName: z.string().min(1, {
@@ -162,6 +163,9 @@ const Page = () => {
                     }
                 </div>
             </div>
+
+            {/* Footer section */}
+            <Footer customClass="px-20" />
         </>
     )
 }

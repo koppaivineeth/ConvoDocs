@@ -19,6 +19,10 @@ import PdfFullScreen from "./PdfFullScreen";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
 
+const options = {
+    cMapUrl: '/cmaps/',
+    standardFontDataUrl: '/standard_fonts/',
+};
 
 interface PdfRendererProps {
     url: string
@@ -150,7 +154,9 @@ const PDFRenderer = ({ url }: PdfRendererProps) => {
                             })
                         }}
                         onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                        file={url} className="max-h-full">
+                        file={url} className="max-h-full"
+                        options={options}
+                    >
                         {isLoading && renderedScale ? <Page
                             width={width ? width : 1}
                             pageNumber={currPage}
@@ -172,6 +178,7 @@ const PDFRenderer = ({ url }: PdfRendererProps) => {
                                 </div>
                             }
                             onRenderSuccess={() => setRenderedScale(scale)}
+                            renderTextLayer={true}
                         />
                     </Document>
                 </div>

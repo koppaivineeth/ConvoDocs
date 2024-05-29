@@ -3,43 +3,47 @@
 import { trpc } from "@/app/_trpc/client"
 import { Textarea } from "../ui/textarea"
 import { Button } from "../ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
+import { Form, FormControl, FormField, FormItem } from "../ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useState } from "react"
-import { ArrowDown, Download } from "lucide-react"
-import PDFDocument from "@/lib/createPDFFile"
+import { ArrowDown } from "lucide-react"
+import NotesPDFDOC from "@/lib/createNotesPDF"
 import { Dialog, DialogTrigger, DialogContent } from "../ui/dialog"
 import { PDFDownloadLink } from "@react-pdf/renderer"
+import { cn } from "@/lib/utils"
 
 interface NotesProps {
-    fileId: string
+    fileId: string,
+    fileName: string
 }
 const formSchema = z.object({
     notes: z.string()
 })
-const NotesInput = ({ fileId }: NotesProps) => {
+const NotesInput = ({ fileId, fileName }: NotesProps) => {
 
     const [isSaving, setIsSaving] = useState<boolean>(false)
     const [isDeleting, setIsDeleting] = useState<boolean>(false)
     const [isDownloadWindowOpen, setIsDownloadWindowOpen] = useState<boolean>(false)
+    const [isNotesEmpty, setIsNotesEmpty] = useState<boolean>(true)
 
     const { mutate: saveNotesFromPDF } = trpc.saveNotesFromPDF.useMutation({
         onMutate: () => {
             setIsSaving(true)
         },
         onSuccess: () => {
-
             setIsSaving(false)
         },
         onSettled: () => {
             alert("Notes saved !")
-            debugger
             setIsSaving(false)
+            setIsNotesEmpty(false)
         }
     })
     const { data: savedNotes } = trpc.retrieveSavedNotes.useQuery({ fileId })
+    const { data: refetchedNotes, error, refetch } = trpc.retrieveSavedNotes.useQuery({ fileId })
+
     const { mutate: deleteAllNotes } = trpc.deleteAllNotes.useMutation({
         onMutate: () => {
             setIsSaving(false)
@@ -47,6 +51,7 @@ const NotesInput = ({ fileId }: NotesProps) => {
         },
         onSuccess: () => {
             setIsDeleting(false)
+            setIsNotesEmpty(true)
             alert("All notes deleted !")
         },
         onSettled: () => {
@@ -66,9 +71,7 @@ const NotesInput = ({ fileId }: NotesProps) => {
             notes: savedNotes?.notes!
         }
     })
-    const clearNotes = () => {
 
-    }
     return (
         <div className="relative">
             <Form {...form}>
@@ -98,8 +101,13 @@ const NotesInput = ({ fileId }: NotesProps) => {
                                     setIsDownloadWindowOpen(false)
                                 }
                             }}>
-                                <DialogTrigger onClick={() => setIsDownloadWindowOpen(true)}>
-                                    <Button type="button">
+                                <DialogTrigger onClick={() => setIsDownloadWindowOpen(true)} disabled={isNotesEmpty}>
+                                    <Button type="button"
+                                        disabled={isNotesEmpty}
+                                        onClick={() => {
+                                            refetch()
+                                        }}
+                                    >
                                         Download
                                         <ArrowDown className="h-4 w-4" />
                                     </Button>
@@ -107,13 +115,13 @@ const NotesInput = ({ fileId }: NotesProps) => {
                                 <DialogContent>
 
                                     <div>
-                                        <span className="mb-5">You can download all the notes!</span>
-                                        <div className="flex justify-between">
-                                            {/* <PDFDownloadLink document={<PDFDocument file={file} />}> */}
-                                            <Button type="button">
-                                                Download Now
-                                            </Button>
-                                            {/* </PDFDownloadLink> */}
+                                        <span>You can download all the notes!</span>
+                                        <div className="flex justify-between mt-5">
+                                            <PDFDownloadLink document={<NotesPDFDOC notes={refetchedNotes} fileName={fileName} />}>
+                                                <Button type="button">
+                                                    Download Now
+                                                </Button>
+                                            </PDFDownloadLink>
                                             <Button className="bg-slate-500 hover:bg-slate-700" onClick={() => setIsDownloadWindowOpen(false)}>Cancel</Button>
                                         </div>
                                     </div>

@@ -7,8 +7,10 @@ import PageLoader from "@/components/PageLoader"
 import TextFileRenderer from "@/components/TextFileRenderer"
 import SideBar from "@/components/Sidebar"
 import Link from "next/link"
-import UploadButton from "@/components/UploadButton"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
+import AfterServerComponentRender from "@/components/AfterServerComponentRender"
+import NotesInput from "@/components/notes/NotesInput"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 
 interface PageProps {
@@ -48,10 +50,11 @@ const Page = async ({ params }: PageProps) => {
 
     return (
         <>
+            <AfterServerComponentRender hideBodyScroll={true} />
             <Suspense fallback={<PageLoader />}>
                 <SideBar>
                     <div className="flex justify-center">
-                        <UploadButton buttonClass="bg-white text-blue-600 mt-5" isSubscribed={subscriptionPlan.isSubscribed} elementType='link' uploadButtonText="Upload new PDF" fileType="pdf" />
+                        {/* <UploadButton buttonClass="bg-white text-blue-600 mt-5" isSubscribed={subscriptionPlan.isSubscribed} elementType='link' uploadButtonText="Upload new PDF" fileType="pdf" /> */}
                     </div>
                     <div className="border p-3 mt-3 h-[calc(100vh-12rem)]">
                         <div className="p-3 title text-center mt-5 mb-5 static text-lg">
@@ -59,11 +62,11 @@ const Page = async ({ params }: PageProps) => {
                                 Click a file
                             </span>
                         </div>
-                        <div className="file-list flex justify-center overflow-auto h-[76%] pb-3">
+                        <div className="file-list flex justify-center overflow-x-hidden overflow-y-auto h-[76%] pb-3">
                             {
                                 <ul>
                                     {files && files.map((file) => (
-                                        <li key={file.fileId} className="text-xs cursor-pointer pb-3 pt-3 border-b border-solid border-zinc-200">
+                                        <li key={file.fileId} className="text-xs cursor-pointer pb-3 pt-3 bg-white text-black p-[1rem] rounded-sm mb-3 ">
                                             <Link href={
                                                 file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
                                             }
@@ -90,7 +93,18 @@ const Page = async ({ params }: PageProps) => {
 
                         {/* right side - chat window */}
                         <div className="shrink-0 flex-[0.75] border-t border-gray-200 lg:w-96 lg:border-1 lg:border-t-0">
-                            <ChatWrapper fileId={file.fileId} file={file} subscriptionPlan={subscriptionPlan} />
+                            <Tabs defaultValue="chat" className="pt-6">
+                                <TabsList className="w-full flex justify-around h-14">
+                                    <TabsTrigger value="chat" className="w-full h-10">Chat</TabsTrigger>
+                                    <TabsTrigger value="notes" className="w-full h-10">Notes</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="chat">
+                                    <ChatWrapper fileId={file.fileId} file={file} subscriptionPlan={subscriptionPlan} />
+                                </TabsContent>
+                                <TabsContent value="notes" className="overflow-scroll">
+                                    <NotesInput fileId={file.fileId} fileName={file.fileName} />
+                                </TabsContent>
+                            </Tabs>
                         </div>
                     </div>
                 </div>

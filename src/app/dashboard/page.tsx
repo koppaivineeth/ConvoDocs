@@ -6,6 +6,7 @@ import { getUserSubscriptionPlan } from "@/lib/stripe"
 import { Suspense } from "react"
 import PageLoader from "@/components/PageLoader"
 import AfterServerComponentRender from "@/components/AfterServerComponentRender"
+import Footer from "@/components/Footer"
 
 const Page = async () => {
 
@@ -27,8 +28,11 @@ const Page = async () => {
         <>
             <Suspense fallback={<PageLoader />}>
                 <AfterServerComponentRender hideBodyScroll={false} />
-                <Dashboard subscriptionPlan={subscriptionPlan} fileType="all" uploadFileType="application/pdf" />
+                <Dashboard subscriptionPlan={subscriptionPlan} fileType="all" uploadFileType="application/pdf" customClass="mb-20" />
             </Suspense>
+
+            {/* Footer section */}
+            <Footer customClass="px-20 bg-white" />
         </>
     )
 }

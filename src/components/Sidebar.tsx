@@ -23,7 +23,7 @@ const SideBar = ({ children }: PageProps) => {
                 </span>
             </div>
             <div className={cn(
-                `hidden select-none collapsible-sidebar h-[calc(100vh-3.5rem)] max-h-full w-60 absolute bg-blue-600 border-r-4 border-l-0 border-z z-10 p-5 text-blue-50 top-[15%]`, {
+                `hidden select-none collapsible-sidebar h-[calc(100vh-5rem)] max-h-full w-60 absolute bg-blue-600 border-r-4 border-l-0 border-z z-10 p-5 text-blue-50 top-[20%]`, {
                 "block": isSideBarOpen
             })}>
                 <div className="close-button flex justify-end static">

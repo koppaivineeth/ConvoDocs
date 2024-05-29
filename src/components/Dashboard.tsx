@@ -11,8 +11,7 @@ import { getUserSubscriptionPlan } from "@/lib/stripe"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, TooltipPortal, TooltipArrow } from "./ui/tooltip"
-import PDFDocument from "@/lib/createPDFFile"
+import PDFDocument from "@/lib/createMessagePDFFile"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
 import PageLoader from "./PageLoader"
@@ -21,9 +20,10 @@ interface PageProps {
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
     fileType: string
     uploadFileType: string
+    customClass: string | null | undefined
 }
 
-const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) => {
+const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: PageProps) => {
     const showSelectAll = false
 
     const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(
@@ -129,7 +129,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
 
     return (
         <>
-            <main className="mx-auto max-w-7xl md:p-10 select-none">
+            <main className={cn("mx-auto max-w-7xl md:p-10 select-none", customClass)}>
                 <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
                     <h1 className="mb-3 font-bold text-4xl text-gray-900">
                         My Files
@@ -139,9 +139,9 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
 
                 {/* Display both PDF and text files in same screen using Accordion */}
 
-                <Accordion type="multiple">
+                <Accordion type="single" defaultValue="PDF">
                     <AccordionItem value="PDF" className="bg-white px-10 mb-5">
-                        <AccordionTrigger className="hover:no-underline">PDF files</AccordionTrigger>
+                        <AccordionTrigger className="hover:no-underline text-lg">PDF files</AccordionTrigger>
                         <AccordionContent>
                             <div className={cn("py-5 border-solid border-b-2", {
                                 "hidden": !showSelectAll
@@ -354,7 +354,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType }: PageProps) =>
                     </AccordionItem>
 
                     <AccordionItem value="Text" className="bg-white px-10">
-                        <AccordionTrigger className="hover:no-underline">Text Files</AccordionTrigger>
+                        <AccordionTrigger className="hover:no-underline text-lg">Text Files</AccordionTrigger>
                         <AccordionContent>
                             <div className={cn("py-5 border-solid border-b-2", {
                                 "hidden": !showSelectAll

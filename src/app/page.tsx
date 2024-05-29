@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <AfterServerComponentRender hideBodyScroll={false} />
-      <MaxWidthWrapper className='mb-12 mt-28 sm:mt-40 flex flex-col items-center justify-center text-center select-none'>
+      <MaxWidthWrapper className='mb-12 mt-24 sm:mt-28 flex flex-col items-center justify-center text-center select-none'>
         {globals.productLaunched && (
           <div className='mx-auto mb-4 flex max-w-fit items-center justify-center space-x-2 overflow-hidden rounded-full border border-gray-200 bg-white px-7 py-2 shadow-md backdrop-blur transition-all hover:border-gray-300 hover:bg-white/50'>
             <p className='text-sm font-semibold text-gray-700'>
@@ -170,7 +170,7 @@ export default function Home() {
         </div>
 
         {/* Other features */}
-        <div className='mx-auto max-w-6xl'>
+        <div className='mx-auto max-w-6xl px-6'>
           <h2 className='font-bold text-3xl text-gray-900 sm:text-3xl mt-32 mb-10'>
             Other features
           </h2>
@@ -207,13 +207,20 @@ export default function Home() {
               <span className='mt-2 text-zinc-700'>
                 It allows you to save your own notes
               </span>
+              <Image
+                src="/takeNotes.png"
+                alt="Take notes window"
+                width={300}
+                height={150}
+                className='mt-16'
+              />
             </div>
           </div>
         </div>
       </div>
 
       {/* Footer section */}
-      <Footer />
+      <Footer customClass="px-20" />
     </>
   )
 }

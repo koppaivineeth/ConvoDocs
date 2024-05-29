@@ -10,6 +10,7 @@ import Link from "next/link"
 import { Suspense } from "react"
 import PageLoader from "@/components/PageLoader"
 import AfterServerComponentRender from "@/components/AfterServerComponentRender"
+import Footer from "@/components/Footer"
 
 const Page = async () => {
     const { getUser } = getKindeServerSession()
@@ -184,7 +185,7 @@ const Page = async () => {
                                                 className: "w-full",
                                                 variant: "secondary"
                                             })}>
-                                                {user ? "Updrade now" : "Sign up"}
+                                                {user ? "Continue" : "Sign up"}
                                                 <ArrowRight className="h-5 w-5 ml-1.5" />
                                             </Link>
                                         ) : user ? (
@@ -203,7 +204,11 @@ const Page = async () => {
                         </TooltipProvider>
                     </div>
                 </MaxWidthWrapper>
+
+                {/* Footer section */}
+                <Footer customClass="px-20" />
             </Suspense>
+
         </>
     )
 }
