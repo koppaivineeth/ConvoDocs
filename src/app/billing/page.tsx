@@ -3,6 +3,8 @@ import { db } from "@/db"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { redirect } from "next/navigation"
+import { Suspense } from "react"
+import PageLoader from "@/components/PageLoader"
 
 const Page = async () => {
 
@@ -20,7 +22,11 @@ const Page = async () => {
 
     const subscriptionPlan = await getUserSubscriptionPlan()
 
-    return <BillingForm subscriptionPlan={subscriptionPlan} />
+    return (
+        <Suspense fallback={<PageLoader />}>
+            <BillingForm subscriptionPlan={subscriptionPlan} />
+        </Suspense>
+    )
 }
 
 export default Page

@@ -20,6 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="light">
+      <script src="https://sdk.cashfree.com/js/v3/cashfree.js" async></script>
       <Providers>
         <body className={cn('min-h-screen font-sans antialiased grainy', inter.className)}>
           <Toaster />

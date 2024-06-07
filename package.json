@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.4",
     "@getbrevo/brevo": "^2.1.1",
     "@hookform/resolvers": "^3.3.4",
     "@kinde-oss/kinde-auth-nextjs": "^2.1.15",

@@ -86,7 +86,6 @@ const Page = async () => {
             ],
         },
     ]
-
     return (
         <>
             <AfterServerComponentRender hideBodyScroll={false} />

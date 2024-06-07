@@ -13,7 +13,18 @@ const nextConfig = {
             }
         ]
     },
-
+    async rewrites() {
+        return [
+            {
+                source: '/convodocs/orders',
+                destination: 'https://sandbox.cashfree.com/pg/orders',
+            },
+            {
+                source: '/convodocs/orders/',
+                destination: 'https://sandbox.cashfree.com/pg/orders/',
+            }
+        ]
+    },
     images: {
         formats: ["image/avif", "image/webp"],
         remotePatterns: [
