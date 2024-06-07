@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@cashfreepayments/cashfree-js':
+    specifier: ^1.0.4
+    version: 1.0.4
   '@getbrevo/brevo':
     specifier: ^2.1.1
     version: 2.1.1
@@ -1449,6 +1452,10 @@ packages:
       '@babel/helper-string-parser': 7.23.4
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
+    dev: false
+
+  /@cashfreepayments/cashfree-js@1.0.4:
+    resolution: {integrity: sha512-xa5TwBKtYhOC+LFJxltFmWjexQCJzK7xdz0QcwrkVxIrAv78gdaYZKGxBHXeEb05O+S4xG9R4DUUO/enmjwD/g==}
     dev: false
 
   /@eslint-community/eslint-utils@4.4.0(eslint@8.57.0):

@@ -571,9 +571,11 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
             </main>
             {
                 showLoadingIcon ? (
-                    <div className="page-loader absolute w-80 h-60 top-0 left-0 right-0 bottom-0 m-auto">
-                        <div className="loader-bg absolute w-full h-full top-0 left-0 right-0 bottom-0 bg-black opacity-50 z-50 rounded-md" />
-                        <PageLoader className="absolute top-0 bottom-0 left-0 right-0" />
+                    <div className="overlay w-full h-full absolute top-0 z-50">
+                        <div className="page-loader absolute w-80 h-60 top-0 left-0 right-0 bottom-0 m-auto">
+                            <div className="loader-bg absolute w-full h-full top-0 left-0 right-0 bottom-0 bg-black opacity-50 z-50 rounded-md" />
+                            <PageLoader className="absolute top-0 bottom-0 left-0 right-0" />
+                        </div>
                     </div>
                 ) : null
             }

@@ -27,7 +27,7 @@ const Page = async () => {
         <>
             <Suspense fallback={<PageLoader />}>
                 <AfterServerComponentRender hideBodyScroll={false} />
-                <Dashboard subscriptionPlan={subscriptionPlan} fileType="text" uploadFileType="text/plain text" />
+                <Dashboard subscriptionPlan={subscriptionPlan} fileType="text" uploadFileType="text/plain text" customClass="" />
             </Suspense>
         </>
     )

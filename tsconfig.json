@@ -33,7 +33,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/components/MaxWidthWrapper.tsx"
+    "src/components/MaxWidthWrapper.tsx",
+    "src/lib/cashfree.js",
+    "src/lib/cashfree.js"
   ],
   "exclude": [
     "node_modules"

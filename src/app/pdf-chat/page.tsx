@@ -25,7 +25,7 @@ const Page = async () => {
     return (
         <>
             <Suspense fallback={<PageLoader />}>
-                <Dashboard subscriptionPlan={subscriptionPlan} fileType="pdf" uploadFileType="application/pdf" />
+                <Dashboard subscriptionPlan={subscriptionPlan} fileType="pdf" uploadFileType="application/pdf" customClass="" />
             </Suspense>
         </>
     )

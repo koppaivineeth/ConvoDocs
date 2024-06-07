@@ -64,6 +64,7 @@ const Page = () => {
             form.reset()
         })
     }
+
     return (
         <>
             <div className="text-center mt-10">

@@ -1,3 +1,5 @@
+"use client"
+
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
@@ -6,8 +8,13 @@ import Image from 'next/image'
 import Footer from "@/components/Footer"
 import globals from '@/lib/utils'
 import AfterServerComponentRender from "@/components/AfterServerComponentRender"
+import PageLoader from '@/components/PageLoader'
+import { useState } from 'react'
 
 export default function Home() {
+
+  const [showLoadingIcon, setShowLoadingIcon] = useState<boolean>(false)
+
   return (
     <>
       <AfterServerComponentRender hideBodyScroll={false} />
@@ -35,6 +42,7 @@ export default function Home() {
             size: 'lg',
             className: 'mt-5',
           })}
+          onClick={() => setShowLoadingIcon(true)}
           href={globals.productLaunched ? '/dashboard' : '/product-launch'}>
           Get started{' '}
           <ArrowRight className='ml-2 h-5 w-5' />
@@ -221,6 +229,15 @@ export default function Home() {
 
       {/* Footer section */}
       <Footer customClass="px-20" />
+
+      {
+        showLoadingIcon ? (
+          <div className="page-loader absolute w-80 h-60 top-0 left-0 right-0 bottom-0 m-auto">
+            <div className="loader-bg absolute w-full h-full top-0 left-0 right-0 bottom-0 bg-black opacity-50 z-50 rounded-md" />
+            <PageLoader className="absolute top-0 bottom-0 left-0 right-0" />
+          </div>
+        ) : null
+      }
     </>
   )
 }

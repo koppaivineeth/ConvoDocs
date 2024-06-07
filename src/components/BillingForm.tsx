@@ -8,16 +8,22 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/c
 import { Button } from "./ui/button"
 import { Loader2 } from "lucide-react"
 import { format } from "date-fns"
+import { getOrderDetails } from "@/lib/cashfree"
 
 interface BillingFormProps {
     subscriptionPlan: Awaited<
         ReturnType<typeof getUserSubscriptionPlan>
     >
+    orderDetails?: Awaited<
+        ReturnType<typeof getOrderDetails>
+    >
 }
 
 const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
     const { toast } = useToast()
+    const orderDetails = getOrderDetails()
     console.log("subscriptionPlan = ", subscriptionPlan)
+    console.log("orderDetails = ", orderDetails)
 
     const { mutate: createStripeSession, isPending } = trpc.createStripeSession.useMutation({
         onSuccess: ({ url }) => {
