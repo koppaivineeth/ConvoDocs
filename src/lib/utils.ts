@@ -54,8 +54,6 @@ export function constructMetadata({
 
 let globals = {
   isMaintanenceMode: false,
-  productLaunched: true,
-  cashfreeOrderId: "",
-  orderExpiry: ""
+  productLaunched: true
 }
 export default globals
