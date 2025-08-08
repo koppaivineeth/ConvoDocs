@@ -37,9 +37,9 @@ const UpgradeButton = () => {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'x-api-version': "2023-08-01",
-                'x-client-id': "239525f590fb717e8444475650525932",
-                'x-client-secret': "cb71a7077ce9aac9bf81a4ba098390b5016cbcca"
+                'x-api-version': process.env.CASHFREE_VERSION!,
+                'x-client-id': process.env.CASHFREE_ID!,
+                'x-client-secret': process.env.CASHFREE_KEY!
             },
             body: JSON.stringify(payload)
         })
