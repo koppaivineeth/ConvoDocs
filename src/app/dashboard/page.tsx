@@ -28,7 +28,7 @@ const Page = async () => {
         <>
             <Suspense fallback={<PageLoader />}>
                 <AfterServerComponentRender hideBodyScroll={false} />
-                <Dashboard subscriptionPlan={subscriptionPlan} fileType="all" uploadFileType="application/pdf" customClass="mb-20" />
+                <Dashboard subscriptionPlan={subscriptionPlan} fileType="pdf" uploadFileType="application/pdf" customClass="mb-20" />
             </Suspense>
 
             {/* Footer section */}

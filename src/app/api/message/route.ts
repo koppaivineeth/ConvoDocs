@@ -80,7 +80,7 @@ export const POST = async (req: NextRequest) => {
             },
             {
                 role: 'user',
-                content: `Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format. \nIf you don't know the answer, just say that you don't know, don't try to make up an answer.
+                content: `Use the following pieces of context (or previous conversation if needed) to answer the users question in markdown format. \nIf you don't know the answer, just say that you don't know, don't try to make up an answer. Be direct and concise - no extra explanations.
               
         \n----------------\n
         
