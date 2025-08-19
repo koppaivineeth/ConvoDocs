@@ -22,12 +22,12 @@ const UploadDropzone = ({
     const [isUploading, setIsUploading] = useState<boolean>(false)
     const [uploadProgress, setUploadProgress] = useState<number>(0)
     const [uploadError, setUploadError] = useState<boolean>(false)
-
+    const [fileSizeError, setFileSizeError] = useState<boolean>(false)
     const { toast } = useToast()
     const { startUpload } = useUploadThing(
         isSubscribed ? "proPlanUploader" : "freePlanUploader"
     )
-
+    console.log("fileType = ", fileType)
     const { mutate: startPolling } = trpc.getFile.useMutation({
         onSuccess: (file) => {
             if (file.fileType === "pdf")
@@ -70,6 +70,19 @@ const UploadDropzone = ({
                         variant: "destructive"
                     })
                 }
+                // File size check
+                const maxSizeMB = isSubscribed ? 16 : 4;
+                const maxSizeBytes = maxSizeMB * 1024 * 1024;
+                if (acceptedFile[0].size > maxSizeBytes) {
+                    setUploadError(true);
+                    setFileSizeError(true);
+                    return toast({
+                        title: "File too large",
+                        description: `The selected file exceeds the ${maxSizeMB}MB limit for your plan.`,
+                        variant: "destructive"
+                    });
+                }
+
                 setIsUploading(true)
                 const progressInterval = startSimulatedProgress()
                 //handle file uploading
@@ -87,8 +100,9 @@ const UploadDropzone = ({
                 const [fileResponse] = res
 
                 const key = fileResponse?.key
+                const url = fileResponse?.url
 
-                if (!key) {
+                if (!key || !url) {
                     return toast({
                         title: "Something went wrong !",
                         description: "Please try again later",
@@ -96,7 +110,43 @@ const UploadDropzone = ({
                     })
                 }
 
+                // Check PDF page count if fileType is PDF and user is not subscribed
+                if (fileType.includes("pdf")) {
+                    try {
+                        const pageRes = await fetch("/api/pdf/page-count", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ url }),
+                        });
+                        const { numPages, error } = await pageRes.json();
+                        if (error) throw new Error(error);
+                        if (!isSubscribed && numPages > 1) { // Example: free users limit to 10 pages
+                            setUploadError(true);
+                            setFileSizeError(true);
 
+                            return toast({
+                                title: "PDF too large",
+                                description: "Free users can only upload PDFs with up to 10 pages.",
+                                variant: "destructive",
+                            });
+                        } else if (isSubscribed && numPages > 25) {
+                            setUploadError(true);
+                            setFileSizeError(true);
+                            return toast({
+                                title: "PDF too large",
+                                description: "You can only upload PDFs with up to 25 pages.",
+                                variant: "destructive",
+                            });
+                        } //TODO: DELETE THE UPLOADED FILE IN THESE CASES
+                    } catch (e) {
+                        setUploadError(true);
+                        return toast({
+                            title: "Error checking PDF",
+                            description: "Could not verify PDF page count.",
+                            variant: "destructive",
+                        });
+                    }
+                }
 
                 clearInterval(progressInterval)
                 setUploadProgress(100)

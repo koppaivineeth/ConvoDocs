@@ -15,6 +15,8 @@ import PDFDocument from "@/lib/createMessagePDFFile"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
 import PageLoader from "./PageLoader"
+import { useToast } from "./ui/use-toast"
+import { useRouter } from "next/navigation"
 
 interface PageProps {
     subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
@@ -39,8 +41,9 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
     const [isDownloading, setIsDownloading] = useState<any>([])
     const [isDownloadWindowOpen, setIsDownloadWindowOpen] = useState<boolean>(false)
     const [showLoadingIcon, setShowLoadingIcon] = useState<boolean>(false)
-
+    const [openFileDeleteDialog, setOpenFileDeleteDialog] = useState<boolean>(false)
     const utils = trpc.useUtils()
+    const router = useRouter()
     const { data: files, isLoading } = trpc.getUserFiles.useQuery()
     const { mutate: getAllFileMessages } = trpc.getAllFileMessages.useMutation({
         onSuccess: () => {
@@ -52,7 +55,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
         onSettled() {
         }
     })
-
+    const { toast } = useToast()
     const { mutate: deleteFile } = trpc.deleteFile.useMutation({
         onSuccess: () => {
             utils.getUserFiles.invalidate()
@@ -65,6 +68,11 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
         }
     })
 
+    const confirmFileDelete = (fileId: string) => {
+        alert("confirm?")
+
+        deleteFile({ id: fileId })
+    }
     const { mutate: deleteFiles } = trpc.deleteFiles.useMutation({
         onSuccess: () => {
             utils.getUserFiles.invalidate()
@@ -127,6 +135,34 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
         setIsFilesEmpty(isEmpty)
     }, [files])
 
+    const selectFile = async (file: any) => {
+        setShowLoadingIcon(true)
+        const pageRes = await fetch("/api/pdf/page-count", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: file.url }),
+        });
+        const { numPages, error } = await pageRes.json();
+        if (error) throw new Error(error);
+        if (!subscriptionPlan.isSubscribed && numPages > 5) { // Example: free users limit to 10 pages
+            setShowLoadingIcon(false)
+            return toast({
+                title: "PDF too large",
+                description: "Free users can only upload PDFs with up to 10 pages.",
+                variant: "destructive",
+            });
+        } else if (subscriptionPlan.isSubscribed && numPages > 25) {
+            setShowLoadingIcon(false)
+            return toast({
+                title: "PDF too large",
+                description: "You can only upload PDFs with up to 25 pages.",
+                variant: "destructive",
+            });
+        } else {
+            router.push(`/pdf-chat/${file.fileId}`)
+        }
+    }
+
     return (
         <>
             <main className={cn("mx-auto max-w-7xl md:p-10 select-none", customClass)}>
@@ -134,7 +170,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
                     <h1 className="mb-3 font-bold text-4xl text-gray-900">
                         My Files
                     </h1>
-                    <UploadButton isSubscribed={subscriptionPlan.isSubscribed} elementType='button' uploadButtonText={fileType === "pdf" ? "Upload PDF" : fileType === "all" ? "Upload PDF/Text" : "Upload text file"} fileType="all" />
+                    <UploadButton isSubscribed={subscriptionPlan.isSubscribed} elementType='button' uploadButtonText={fileType === "pdf" ? "Upload PDF" : fileType === "all" ? "Upload PDF/Text" : "Upload text file"} fileType="pdf" />
                 </div>
 
                 {/* Display both PDF and text files in same screen using Accordion */}
@@ -253,12 +289,17 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
 
                                                         {/*  */}
                                                     </span>
-                                                    <Link href={
-                                                        selectedFiles.includes(file) ? {} :
-                                                            file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
-                                                    }
-                                                        className="flex flex-col gap-2"
-                                                        onClick={() => setShowLoadingIcon(true)}
+                                                    <div
+                                                        // href={
+                                                        //     selectedFiles.includes(file) ? {} :
+                                                        //         file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
+                                                        // }
+                                                        className="flex flex-col gap-2 cursor-pointer"
+                                                        onClick={async (e) => {
+                                                            e.preventDefault();
+                                                            await selectFile(file)
+                                                        }
+                                                        }
                                                     >
                                                         <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                                                             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
@@ -268,7 +309,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </Link>
+                                                    </div>
                                                     <div className="px-6 mt-4 grid grid-cols-4 place-items-center py-2 gap-6 text-xs text-zinc-500">
                                                         <div className="flex items-center gap-2">
                                                             <Plus className="h-4 w-4" />
@@ -323,17 +364,40 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
                                                                 </DialogContent>
                                                             </Dialog>
                                                         </div>
+                                                        <Dialog open={openFileDeleteDialog} onOpenChange={(visible) => {
+                                                            if (!visible) {
+                                                                setOpenFileDeleteDialog(false)
+                                                            }
+                                                        }}
+                                                        >
+                                                            <DialogTrigger asChild>
+                                                                <Button
+                                                                    onClick={() => setOpenFileDeleteDialog(true)}
+                                                                    disabled={selectedFiles.includes(file)}
+                                                                    size="sm" className="w-full" variant="destructive">
+                                                                    {currentlyDeletingFile === file.fileId ? (
+                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                    ) : <Trash />}
+                                                                </Button>
+                                                            </DialogTrigger>
+                                                            <DialogContent>
+                                                                <p>Are you sure you want to delete this file?</p>
+                                                                <div className="flex justify-end mr-3">
+                                                                    <Button className="bg-red-500 hover:bg-red-700 text-white mr-3"
+                                                                        onClick={() => {
+                                                                            setOpenFileDeleteDialog(false)
+                                                                            deleteFile({ id: file.fileId })
+                                                                        }}
+                                                                    > Confirm </Button>
+                                                                    <Button className="bg-slate-500 hover:bg-slate-700 text-white"
+                                                                        onClick={() => setOpenFileDeleteDialog(false)}>
+                                                                        Cancel
+                                                                    </Button>
+                                                                </div>
 
-                                                        <Button
-                                                            onClick={() => {
-                                                                deleteFile({ id: file.fileId })
-                                                            }}
-                                                            disabled={selectedFiles.includes(file)}
-                                                            size="sm" className="w-full" variant="destructive">
-                                                            {currentlyDeletingFile === file.fileId ? (
-                                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                            ) : <Trash />}
-                                                        </Button>
+                                                            </DialogContent>
+                                                        </Dialog>
+
                                                     </div>
                                                 </li>
                                             ))) : (
@@ -353,7 +417,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
                         </AccordionContent>
                     </AccordionItem>
 
-                    <AccordionItem value="Text" className="bg-white px-10">
+                    <AccordionItem value="Text" className="bg-white px-10" hidden>
                         <AccordionTrigger className="hover:no-underline text-lg">Text Files</AccordionTrigger>
                         <AccordionContent>
                             <div className={cn("py-5 border-solid border-b-2", {
@@ -466,12 +530,17 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
 
                                                         {/*  */}
                                                     </span>
-                                                    <Link href={
-                                                        selectedFiles.includes(file) ? {} :
-                                                            file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
-                                                    }
+                                                    <div
+                                                        // href={
+                                                        //     selectedFiles.includes(file) ? {} :
+                                                        //         file.fileType === "pdf" ? `/pdf-chat/${file.fileId}` : file.fileType === "text" ? `text-file-chat/${file.fileId}` : ""
+                                                        // }
                                                         className="flex flex-col gap-2"
-                                                        onClick={() => setShowLoadingIcon(true)}
+                                                        onClick={async (e) => {
+                                                            e.preventDefault();
+                                                            await selectFile(file)
+                                                        }
+                                                        }
                                                     >
                                                         <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                                                             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
@@ -481,7 +550,7 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </Link>
+                                                    </div>
                                                     <div className="px-6 mt-4 grid grid-cols-4 place-items-center py-2 gap-6 text-xs text-zinc-500">
                                                         <div className="flex items-center gap-2">
                                                             <Plus className="h-4 w-4" />
@@ -537,16 +606,38 @@ const Dashboard = ({ subscriptionPlan, fileType, uploadFileType, customClass }: 
                                                             </Dialog>
                                                         </div>
 
-                                                        <Button
-                                                            onClick={() => {
-                                                                deleteFile({ id: file.fileId })
-                                                            }}
-                                                            disabled={selectedFiles.includes(file)}
-                                                            size="sm" className="w-full" variant="destructive">
-                                                            {currentlyDeletingFile === file.fileId ? (
-                                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                            ) : <Trash />}
-                                                        </Button>
+                                                        <Dialog open={openFileDeleteDialog} onOpenChange={(visible) => {
+                                                            if (!visible) {
+                                                                setOpenFileDeleteDialog(false)
+                                                            }
+                                                        }}
+                                                        >
+                                                            <DialogTrigger asChild>
+                                                                <Button
+
+                                                                    disabled={selectedFiles.includes(file)}
+                                                                    size="sm" className="w-full" variant="destructive">
+                                                                    {currentlyDeletingFile === file.fileId ? (
+                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                    ) : <Trash />}
+                                                                </Button>
+                                                            </DialogTrigger>
+                                                            <DialogContent>
+                                                                <p>Are you sure you want to delete this file?</p>
+                                                                <div className="flex justify-end mr-3">
+                                                                    <Button className="bg-red-500 hover:bg-red-700 text-white mr-3"
+                                                                        onClick={() => {
+                                                                            setOpenFileDeleteDialog(false)
+                                                                            deleteFile({ id: file.fileId })
+                                                                        }}
+                                                                    > Confirm</Button>
+                                                                    <Button className="bg-slate-500 hover:bg-slate-700 text-white"
+                                                                        onClick={() => setOpenFileDeleteDialog(false)}>
+                                                                        Cancel
+                                                                    </Button>
+                                                                </div>
+                                                            </DialogContent>
+                                                        </Dialog>
                                                     </div>
                                                 </li>
                                             ))) : (
