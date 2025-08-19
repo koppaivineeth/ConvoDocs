@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
                 },
             ],
             success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
-            // cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancel`,
+            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancel`,
         });
         console.log("Stripe session id created after payment:", session.id);
         return new Response(JSON.stringify({ url: session.url, sessionId: session.id }), { status: 200 });
