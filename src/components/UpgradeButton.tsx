@@ -8,12 +8,19 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
 import { useToast } from "./ui/use-toast"
 import { cn } from "@/lib/utils"
+import { useBillings } from "@/hooks/billings/use-billings"
 
 const UpgradeButton = () => {
     const [showLoadingIcon, setShowLoadingIcon] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const { toast } = useToast()
-
+    const {
+        status,
+        error,
+        createSubscriptionCheckoutSession,
+        cancelSubscription,
+        fetchSubscriptionStatus,
+    } = useBillings();
     const createCashfreeOrder = async () => {
         const payload = {
             "order_id": "ORDERID_CD_" + Date.now(),
@@ -47,53 +54,58 @@ const UpgradeButton = () => {
     }
     const handleClick = async () => {
         setShowLoadingIcon(true)
-        let orderDetails = await createCashfreeOrder()
 
-        if (!orderDetails.ok) {
-            toast({
-                title: "There was a problem ...",
-                description: "Please try again in a moment",
-                variant: "destructive"
-            })
-            setShowLoadingIcon(false)
-            return
-        }
-        setIsOpen(true)
-        let orderDetailsText
-        let orderObject = {
-            payment_session_id: "",
-            order_id: "",
-            order_expiry_time: ""
-        }
-        if (orderDetails && orderDetails.ok) {
-            orderDetailsText = await orderDetails.text()
-            orderObject = JSON.parse(orderDetailsText)
+        const createCheckout = await createSubscriptionCheckoutSession("price_1RxM6FSKQeVZ6dstrK6DgNoL")
 
-            let checkoutOptions = {
-                paymentSessionId: orderObject.payment_session_id,
-                redirectTarget: "payment_iframe"
-            }
-            cashfreeCheckout(checkoutOptions).then((result: { error: any; redirect: any; paymentDetails: { paymentMessage: any } }) => {
-                if (result.error) {
-                    console.log("User has closed the popup or there is some payment error, Check for Payment Status");
-                    console.log(result.error);
-                }
-                if (result.redirect) {
-                    console.log("Payment will be redirected");
-                    setOrderId(orderObject.order_id)
-                    setOrderExpiry(orderObject.order_expiry_time)
-                }
-                if (result.paymentDetails) {
-                    console.log("Payment has been completed, Check for Payment Status");
-                    console.log(result.paymentDetails.paymentMessage);
-                    setOrderId(orderObject.order_id)
-                    setOrderExpiry(orderObject.order_expiry_time)
-                }
-            })
-        } else {
-            setShowLoadingIcon(false)
-            alert("Order failed")
-        }
+        console.log(createCheckout)
+        // let orderDetails = await createCashfreeOrder()
+
+        // if (!orderDetails.ok) {
+        //     toast({
+        //         title: "There was a problem ...",
+        //         description: "Please try again in a moment",
+        //         variant: "destructive"
+        //     })
+        //     setShowLoadingIcon(false)
+        //     return
+        // }
+        // setIsOpen(true)
+        // let orderDetailsText
+        // let orderObject = {
+        //     payment_session_id: "",
+        //     order_id: "",
+        //     order_expiry_time: ""
+        // }
+        // if (orderDetails && orderDetails.ok) {
+        //     orderDetailsText = await orderDetails.text()
+        //     orderObject = JSON.parse(orderDetailsText)
+
+        //     let checkoutOptions = {
+        //         paymentSessionId: orderObject.payment_session_id,
+        //         redirectTarget: "payment_iframe"
+        //     }
+        //     cashfreeCheckout(checkoutOptions).then((result: { error: any; redirect: any; paymentDetails: { paymentMessage: any } }) => {
+        //         if (result.error) {
+        //             console.log("User has closed the popup or there is some payment error, Check for Payment Status");
+        //             console.log(result.error);
+        //         }
+        //         if (result.redirect) {
+        //             console.log("Payment will be redirected");
+        //             setOrderId(orderObject.order_id)
+        //             setOrderExpiry(orderObject.order_expiry_time)
+        //         }
+        //         if (result.paymentDetails) {
+        //             console.log("Payment has been completed, Check for Payment Status");
+        //             console.log(result.paymentDetails.paymentMessage);
+        //             setOrderId(orderObject.order_id)
+        //             setOrderExpiry(orderObject.order_expiry_time)
+        //         }
+        //     })
+        // } else {
+        //     setShowLoadingIcon(false)
+        //     alert("Order failed")
+        // }
+
     }
 
     return (
